@@ -1,10 +1,9 @@
 <?php
-
 /**
  * User: Emaro
  * Date: 03.03.2017
- * Time: 10:53
+ * Time: 14:28
  */
-class Controller {
-    
-}
+?>
+
+<h1>Home - Default View</h1>
