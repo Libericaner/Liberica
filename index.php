@@ -7,5 +7,11 @@
 
 require_once "mvc/Controller/Controller.php";
 
-new Controller($_GET['view']);
+$view = '';
 
+if (isset($_GET['view'])) {
+
+    $view = $_GET['view'];
+}
+
+new Controller($view);
