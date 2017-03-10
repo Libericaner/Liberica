@@ -5,6 +5,9 @@
  * Date: 03.03.2017
  * Time: 10:53
  */
+
+require_once 'mvc/Controller/View.php'; // Relative to index.php
+
 class Controller {
     
     
@@ -16,7 +19,7 @@ class Controller {
     
     
     public function showView($uView) {
-    
+        
         /** @noinspection PhpUnusedLocalVariableInspection */
         $sView = htmlentities($uView); // Used to output the view name in views
         
@@ -31,18 +34,13 @@ class Controller {
     
     private function getValidViewPath($view) {
         
-        $path = $this->getViewPath($view);
+        $path = View::getViewPath($view);
         $viewExists = in_array($path, $this->views);
         
         if ($viewExists) {
             return $path;
         }
         
-        return $this->getViewPath(View::ERROR);
-    }
-    
-    private function getViewPath($view) {
-        
-        return View::LOCATION . $view . View::SUFFIX;
+        return View::get404Path();
     }
 }
