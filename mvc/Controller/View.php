@@ -5,6 +5,9 @@
  * Date: 2017-03-10
  * Time: 11:19
  */
+
+require_once "mvc/Controller/printLib.php";
+
 class View {
     
     const SUFFIX   = '.view.php';
@@ -25,8 +28,14 @@ class View {
     
     public function show() {
         
+        printHead();
+        
+        // TODO: print menu
+        
         /** @noinspection PhpIncludeInspection */
         include $this->getValidViewPath($this->sId);
+        
+        printFoot();
     }
     
     private function getValidViewPath($view) {
