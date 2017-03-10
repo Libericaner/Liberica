@@ -7,16 +7,10 @@
  */
 class Controller {
     
-    const DEFAULT_VIEW = '404';
-    
-    private $viewsLocation = 'mvc/Views/';
-    private $viewSuffix    = '.view.php';
-    private $viewPattern   = 'mvc/Views/*.view.php';
-    
     
     public function __construct($view) {
         
-        $this->views = glob($this->viewPattern); // Get all view.php file names
+        $this->views = glob(View::PATTERN); // Get all view.php file names
         $this->showView($view);
     }
     
@@ -44,11 +38,11 @@ class Controller {
             return $path;
         }
         
-        return $this->getViewPath(self::DEFAULT_VIEW);
+        return $this->getViewPath(View::ERROR);
     }
     
     private function getViewPath($view) {
         
-        return $this->viewsLocation . $view . $this->viewSuffix;
+        return View::LOCATION . $view . View::SUFFIX;
     }
 }
