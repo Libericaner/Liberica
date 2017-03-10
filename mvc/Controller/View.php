@@ -12,6 +12,40 @@ class View {
     const PATTERN  = self::LOCATION . '*' . self::SUFFIX;
     const ERROR    = '404';
     
+    const NO404FOUND = 'Kein gültiger Pfad und 404 View wurde nicht gefunden';
+    
+    private static $VIEWS;
+    
+    
+    public function __construct($uId) {
+        
+        $this->sId = htmlentities($uId);
+    }
+    
+    
+    public function show() {
+        
+        /** @noinspection PhpIncludeInspection */
+        include $this->getValidViewPath($this->sId);
+    }
+    
+    private function getValidViewPath($view) {
+        
+        self::refreshViewList();
+        
+        $path = View::getViewPath($view);
+        $viewExists = in_array($path, self::$VIEWS);
+        
+        if ($viewExists)
+            return $path;
+        
+        return View::get404Path();
+    }
+    
+    public static function refreshViewList() {
+        
+        self::$VIEWS = glob(self::PATTERN);
+    }
     
     public static function getViewPath($view) {
         
@@ -20,6 +54,11 @@ class View {
     
     public static function get404Path() {
         
-        return self::getViewPath(self::ERROR);
+        $errorPath = self::getViewPath(self::ERROR);
+        
+        if (!is_file($errorPath))
+            die(self::NO404FOUND);
+        
+        return $errorPath;
     }
 }
