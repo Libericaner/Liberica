@@ -10,10 +10,10 @@
 
 ?>
 
-<h1>Demo View</h1>
-
-<p>Simple HTML output</p>
-
-<!-- Links always begin with './?view=' and ends with the name of the target view without the '.view.php' suffix -->
-<p>Demo Link: <a href="./?view=demo">DEMO</a></p>
-<p>Demo Link: <a href="./?view=xyz">DEMO invalid Link</a></p>
+    <h1>Demo View</h1>
+    
+    <p>Simple HTML output</p>
+    
+    <!-- Links always begin with './?view=' and ends with the name of the target view without the '.view.php' suffix -->
+    <p>Demo Link: <a href="./?view=demo">DEMO</a></p>
+    <p>Demo Link: <a href="./?view=xyz">DEMO invalid Link</a></p>
