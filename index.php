@@ -10,7 +10,7 @@ require_once "mvc/Controller/Controller.php";
 $view = '';
 
 if (isset($_GET['view'])) {
-
+    
     $view = $_GET['view'];
 }
 
