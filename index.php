@@ -5,4 +5,13 @@
  * Time: 10:47
  */
 
-// TODO: Implement controller usage
+require_once "mvc/Controller/Controller.php";
+
+$view = '';
+
+if (isset($_GET['view'])) {
+
+    $view = $_GET['view'];
+}
+
+new Controller($view);
