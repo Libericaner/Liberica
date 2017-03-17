@@ -13,18 +13,22 @@ class Controller {
     
     public function __construct($uViewId) {
         
-        if (isset($_POST['command'])) {
-            $cmd = $_POST['command'];
-            
-            if (!empty($cmd) && $cmd == 'save-string') {
-                $data = $_POST['data'];
-                if (isset($data) && !empty($data))
-                    fileAppend($data);
-            }
-        }
+        if (isset($_POST['command']))
+            $this->run($_POST['command']);
         
         
         $view = new View($uViewId);
         $view->show();
+    }
+    
+    private function run($uCommand) {
+        
+        if (empty($uCommand))
+            return;
+        
+        switch ($uCommand) {
+            case 'save-string':
+                fileAppend($_POST['data']);
+        }
     }
 }

@@ -12,8 +12,8 @@ function printFile() {
     if ($f == NULL)
         return;
     
-    foreach ($f as $line) {
-        echo $line . '<br>';
+    foreach ($f as $uLine) {
+        echo htmlentities($uLine) . '<br>';
     }
 }
 
