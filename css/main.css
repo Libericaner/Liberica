@@ -1,0 +1,40 @@
+/* GENERAL */
+
+body {
+    margin : 2%;
+}
+
+a {
+    color           : blue;
+    text-decoration : none;
+}
+
+a:hover {
+    text-decoration : underline;
+}
+
+/* NAVIGATION */
+
+nav {
+    background-color : whitesmoke;
+}
+
+nav ul {
+    list-style : none;
+}
+
+nav li {
+    display : inline-block;
+    margin  : 0;
+    padding : 0;
+}
+
+nav a {
+    padding : 5px;
+}
+
+nav a:hover {
+    text-decoration  : none;
+    background-color : darkblue;
+    color: white;
+}

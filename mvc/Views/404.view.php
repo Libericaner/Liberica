@@ -7,6 +7,6 @@
 ?>
 
 <h1>Error 404 - Seite wurde nicht gefunden</h1>
-<p>Die Seite <strong><?=$sView?></strong> wurde nicht gefunden</p>
+<p>Die Seite <strong><?=$this->sId?></strong> wurde nicht gefunden</p>
 <p><a href="./?view=home">Home</a></p>
 <p><a href="./?view=demo">Demo</a></p>

@@ -30,7 +30,7 @@ class View {
         
         printHead();
         
-        // TODO: print menu
+        printMenu();
         
         /** @noinspection PhpIncludeInspection */
         include $this->getValidViewPath($this->sId);
