@@ -5,31 +5,23 @@
  * Date: 17.03.2017
  * Time: 08:43
  */
-class Gallery implements Queryable {
+class Gallery extends Model {
     
     //TODO : create query-pattern
     
-    public function modelSelect(Integer $whichSelectStatement) {
+    private function modelSelect(Integer $whichSelectStatement) {
         // TODO: Implement modelSelect() method.
     }
     
-    public function modelInsert(Integer $whichInsertStatement) {
+    private function modelInsert(Integer $whichInsertStatement) {
         // TODO: Implement modelInsert() method.
     }
     
-    public function modelUpdate(Integer $whichUpdateStatement) {
+    private function modelUpdate(Integer $whichUpdateStatement) {
         // TODO: Implement modelUpdate() method.
     }
     
-    public function modelDelete(Integer $whichDeleteStatement) {
+    private function modelDelete(Integer $whichDeleteStatement) {
         // TODO: Implement modelDelete() method.
-    }
-    
-    public function getQueryParameter() {
-        // TODO: Implement getQueryParameter() method.
-    }
-    
-    public function setQueryParameter(Array $params) {
-        // TODO: Implement setQueryParameter() method.
     }
 }
