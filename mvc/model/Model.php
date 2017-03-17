@@ -25,7 +25,7 @@ abstract class Model {
     }
     
     //Set the database for connection
-    public function setDatabase(PDO $database) {
+    public function setDatabase(Database $database) {
         
         $this->database = $database;
     }

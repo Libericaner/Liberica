@@ -33,7 +33,7 @@ class User extends Model {
     const UPDATE_FAIL       = "We could not execute the update, cause of invalid values";
     
     //You can initialize a user with the option to offer the PDO-object at initialization
-    public function __construct(PDO $database = NULL) {
+    public function __construct(Database $database = NULL) {
         
         if (!($database == NULL)) {
             $this->setDatabase($database);
@@ -44,7 +44,7 @@ class User extends Model {
     public function verifyUser($username, $password) {
         
         $this->setQueryParameter(array('username' => $username));
-        if ($result = $this->modelSelect(2)) {
+        if ($result = $this->modelSelect(self::SELECT_PASSWORD_HASH_STATEMENT)) {
             if ($this->hashPassword($password) == $result['password']) {
                 return TRUE;
             } else {
@@ -53,6 +53,20 @@ class User extends Model {
         } else {
             $_GET['Fail'] = self::VERIFICATION_FAIL;
         }
+    }
+    
+    public function selectUserByName(String $username) {
+        
+        $this->setQueryParameter(array('username' => $username));
+        
+        return $this->modelSelect(self::SELECT_USER_BY_NAME_STATEMENT);
+    }
+    
+    public function selectUserById(Integer $id) {
+        
+        $this->setQueryParameter(array('id' => $id));
+        
+        return $this->modelSelect(self::SELECT_USER_BY_ID_STATEMENT);
     }
     
     //Adds user after checking if the same username already exists. Retutns true, if successfully added
@@ -64,7 +78,7 @@ class User extends Model {
             return FALSE;
         } else {
             $this->setQueryParameter(array('username' => $username, 'password' => $password, 'prename' => $prename, 'name' => $name));
-            $this->modelInsert(1);
+            $this->modelInsert(self::ADD_USER_STATEMENT);
             
             return TRUE;
         }
@@ -73,48 +87,58 @@ class User extends Model {
     public function deleteUser($id) {
         
         $this->setQueryParameter(array('id' => $id));
-        $this->modelDelete(1);
+        $this->modelDelete(self::DELETE_USER_BY_ID_STATEMENT);
     }
     
     public function updateUser($id, $username = "", $password = "", $prename = "", $name = "") {
         
         if (!($username == "") && !$this->userExist($username)) {
             $this->setQueryParameter(array('id' => $id, 'username' => $username));
-            $this->modelUpdate(1);
+            $this->modelUpdate(self::UPDATE_USERNAME_STATEMENT);
         } else {
             $_GET['This username exists already'];
         }
         if (!($password == "")) {
             $this->setQueryParameter(array('id' => $id, 'password' => $password));
-            $this->modelUpdate(2);
+            $this->modelUpdate(self::UPDATE_PASSWORD_STATEMENT);
         }
         if (!($prename == "")) {
             $this->setQueryParameter(array('id' => $id, 'prename' => $prename));
-            $this->modelUpdate(3);
+            $this->modelUpdate(self::UPDATE_PRENAME_STATEMENT);
         }
         if (!($name == "")) {
             $this->setQueryParameter(array('id' => $id, 'name' => $name));
-            $this->modelUpdate(4);
+            $this->modelUpdate(self::UPDATE_NAME_STATEMENT);
         }
     }
+    
+    //SELECT
+    const SELECT_USER_BY_NAME_STATEMENT  = 1;
+    const SELECT_PASSWORD_HASH_STATEMENT = 2;
+    const SELECT_USER_BY_ID_STATEMENT    = 3;
     
     private function modelSelect(Integer $whichSelectStatement) {
         // TODO: Implement modelSelect() method.
         switch ($whichSelectStatement) {
-            case 1: //SELECT user by his name
+            case self::SELECT_USER_BY_NAME_STATEMENT: //SELECT user by his name
                 return $this->database->performQuery(self, self::GET_USER_BY_NAME);
-            case 2: //Get password hash by username for verification
+            case self::SELECT_PASSWORD_HASH_STATEMENT: //Get password hash by username for verification
                 return $this->database->performQuery(self, self::GET_PASSWORD_HASH);
+            case self::SELECT_USER_BY_ID_STATEMENT:
+                return $this->database->performQuery(self, self::GET_USER_BY_ID);
             default:
                 $_GET['Fail'] = self::QUERY_FAIL;
                 break;
         }
     }
     
+    //INSERT
+    const ADD_USER_STATEMENT = 1;
+    
     private function modelInsert(Integer $whichInsertStatement) {
         // TODO: Implement modelInsert() method.
         switch ($whichInsertStatement) {
-            case 1:
+            case self::ADD_USER_STATEMENT:
                 $this->database->performQuery(self, self::ADDUSER);
                 break;
             default:
@@ -123,20 +147,25 @@ class User extends Model {
         }
     }
     
-    //Database communication
+    //UPDATE
+    const UPDATE_USERNAME_STATEMENT = 1;
+    const UPDATE_PASSWORD_STATEMENT = 2;
+    const UPDATE_PRENAME_STATEMENT  = 3;
+    const UPDATE_NAME_STATEMENT     = 4;
+    
     private function modelUpdate(Integer $whichUpdateStatement) {
         // TODO: Implement modelUpdate() method.
         switch ($whichUpdateStatement) {
-            case 1:
+            case self::UPDATE_USERNAME_STATEMENT:
                 $this->database->performQuery(self, self::UPDATE_USERNAME);
                 break;
-            case 2:
+            case self::UPDATE_PASSWORD_STATEMENT:
                 $this->database->performQuery(self, self::UPDATE_PASSWORD);
                 break;
-            case 3:
+            case self::UPDATE_PRENAME_STATEMENT:
                 $this->database->performQuery(self, self::UPDATE_PRENAME);
                 break;
-            case 4:
+            case self::UPDATE_NAME_STATEMENT:
                 $this->database->performQuery(self, self::UPDATE_NAME);
                 break;
             default:
@@ -145,10 +174,13 @@ class User extends Model {
         }
     }
     
+    //DELETE
+    const DELETE_USER_BY_ID_STATEMENT = 1;
+    
     private function modelDelete(Integer $whichDeleteStatement) {
         // TODO: Implement modelDelete() method.
         switch ($whichDeleteStatement) {
-            case 1:
+            case self::DELETE_USER_BY_ID_STATEMENT:
                 $this->database->performQuery(self, self::DELETE_USER_BY_ID);
                 break;
             default:

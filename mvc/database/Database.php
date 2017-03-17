@@ -22,6 +22,8 @@ class Database {
         $this->username = $username;
         $this->password = $password;
         $this->database = $database;
+    
+        $this->getDatabaseConnection();
     }
     
     public function getDatabaseConnection() {

@@ -8,4 +8,3 @@ include_once "Database.php";
 
 //TODO : Parameter anpassen
 $database = new Database("host", "username", "password", "database");
-$db = $database->getDatabaseConnection();
