@@ -19,13 +19,13 @@ function printFile() {
 
 function fileAppend($content) {
     
+    $content .= "\n";
+    
     $f = file('file.txt');
     
     $c = count($f) -1 ;
-    $l = $f[$c ];
+    $l = $f[$c];
     
-    echo $c . $l . $content;
-    
-    if ($f[count($f) - 1] != $content . "\n")
-        file_put_contents('file.txt', $content . "\n", FILE_APPEND);
+    if ($l != $content)
+        file_put_contents('file.txt', $content, FILE_APPEND);
 }
