@@ -31,8 +31,8 @@ function printMenu() {
 
     <nav><code>menu:</code>
         <ul>
-            <li><a href="./?view=demo">Demo</a></li>
-            <li><a href="./?view=404">Error page</a></li>
+            <li><?=viewLink('demo', 'Demo')?></li>
+                <?=li(viewLink('404', 'Error Page'))?>
         </ul>
     </nav>
     <?php
@@ -48,4 +48,19 @@ function printFoot() {
 
     </body>
     <?php
+}
+
+function li($html) {
+    
+    return '<li>' . $html . '</li>';
+}
+
+function viewLink($view, $label) {
+    
+    return a("./?view=${view}", $label);
+}
+
+function a($target, $label) {
+    
+    return '<a href="' . $target . '">' . htmlentities($label) . '</a>';
 }
