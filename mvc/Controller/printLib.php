@@ -33,6 +33,7 @@ function printMenu() {
         <ul>
             <li><?=viewLink('demo', 'Demo')?></li>
                 <?=li(viewLink('404', 'Error Page'))?>
+                <?=li(viewLink('cc', 'Controll Center'))?>
         </ul>
     </nav>
     <?php
@@ -41,7 +42,7 @@ function printMenu() {
 function printFoot() {
     
     ?>
-
+    <br>
     <footer><code>footer:</code>
         <p>&#169; 2017 - David Schor, Joel Häberli, Miro Albrecht</p>
     </footer>
