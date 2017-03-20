@@ -15,5 +15,6 @@
     </form>
     <br>
     <div>
+        <p><strong>file.txt</strong> stores the follwing content:</p>
         <?=printFile()?>
     </div>

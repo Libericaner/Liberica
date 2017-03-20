@@ -1,8 +1,8 @@
 /* GENERAL */
 
 body {
-    margin : 2%;
-    font-family: monospace;
+    margin      : 2%;
+    font-family : monospace;
 }
 
 a {
@@ -38,4 +38,10 @@ nav a:hover {
     /*text-decoration  : none;
     background-color : darkblue;
     color: white;*/
+}
+
+/* SPECIAL */
+
+.error {
+    color : red;
 }
