@@ -65,3 +65,11 @@ function a($target, $label) {
     
     return '<a href="' . $target . '">' . htmlentities($label) . '</a>';
 }
+
+function printIfSet($var)
+{
+    if ($var)
+        return $var;
+    
+    return "NULL";
+}

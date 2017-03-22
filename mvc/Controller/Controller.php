@@ -9,6 +9,8 @@
 require_once 'mvc/Controller/View.php'; // Relative to index.php
 require_once 'mvc/Controller/file.php';
 
+$u;
+
 class Controller {
     
     public function __construct($uViewId) {
@@ -16,9 +18,14 @@ class Controller {
         if (isset($_POST['command']))
             $this->run($_POST['command']);
         
+        $u = FALSE;
+        if (isset($_POST['register']))
+        {
+            $u =  "USER";
+        }
         
         $view = new View($uViewId);
-        $view->show();
+        $view->show($u);
     }
     
     private function run($uCommand) {

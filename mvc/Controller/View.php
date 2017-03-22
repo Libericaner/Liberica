@@ -26,7 +26,7 @@ class View {
     }
     
     
-    public function show() {
+    public function show($arg) {
         
         printHead();
         
