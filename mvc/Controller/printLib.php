@@ -5,48 +5,48 @@
  * Time: 13:55
  */
 
+
 /**
  * @param string $title HTML title
  */
 function printHead($title = 'PHP-MVC by DJM') {
     
     ?>
-
+    
     <!DOCTYPE html>
-
+    
     <head>
         <meta charset="UTF-8">
         <title><?=$title?></title>
-
+        
         <link rel="stylesheet" href="css/main.css">
     </head>
-
-    <body><code>body:</code>
+    
+    <body>
     <?php
 }
 
 function printMenu() {
     
     ?>
-
-    <nav><code>menu:</code>
+    
+    <nav>
         <ul>
             <li><?=viewLink('demo', 'Demo')?></li>
-                <?=li(viewLink('404', 'Error Page'))?>
-                <?=li(viewLink('cc', 'Controll Center'))?>
+            <?=li(viewLink('404', 'Error Page'))?>
+            <?=li(viewLink('cc', 'Controll Center'))?>
         </ul>
     </nav>
     <?php
 }
 
 function printFoot() {
-    
     ?>
     <br>
-    <footer><code>footer:</code>
+    <footer>
         <p>&#169; 2017 - David Schor, Joel Häberli, Miro Albrecht</p>
     </footer>
-
+    
     </body>
     <?php
 }
@@ -66,8 +66,8 @@ function a($target, $label) {
     return '<a href="' . $target . '">' . htmlentities($label) . '</a>';
 }
 
-function printIfSet($var)
-{
+function printIfSet($var) {
+    
     if ($var)
         return $var;
     

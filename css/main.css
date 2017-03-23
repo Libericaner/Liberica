@@ -1,7 +1,8 @@
 /* GENERAL */
 
 body {
-    margin      : 2%;
+    margin      : 3% auto auto;
+    width       : 70%;
     font-family : monospace;
 }
 

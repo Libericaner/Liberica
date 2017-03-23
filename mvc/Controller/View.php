@@ -28,6 +28,7 @@ class View {
     
     public function show($arg) {
         
+        
         printHead();
         
         printMenu();
