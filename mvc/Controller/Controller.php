@@ -15,27 +15,31 @@ class Controller {
     
     public function __construct($uViewId) {
         
-        if (isset($_POST['command']))
-            $this->run($_POST['command']);
+        if (!isset($_POST['sub']))
+            $u = 'NULL';
+        else
+            $u = $this->run($_POST['sub']);
         
-        $u = FALSE;
-        if (isset($_POST['register']))
-        {
-            $u =  "USER";
-        }
         
         $view = new View($uViewId);
         $view->show($u);
     }
     
-    private function run($uCommand) {
+    private function run($cmd) {
         
-        if (empty($uCommand))
-            return;
-        
-        switch ($uCommand) {
-            case 'save-string':
-                fileAppend($_POST['data']);
+        if (isset($cmd['file'])) {
+            
+            fileAppend($_POST['data']);
+            return 'saved in file: ' . $_POST['data'];
+        }
+        elseif (isset($cmd['register'])) {
+            
+            return 'User "' . $_POST['name'] . '" registered';
+        }
+        elseif (isset($cmd['redir'])) {
+            
+            header('Location: ./?view=home');
+            exit;
         }
     }
 }
