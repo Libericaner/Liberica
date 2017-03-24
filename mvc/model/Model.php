@@ -8,25 +8,25 @@
 abstract class Model {
     
     //the database instance used by the model to communicate with the database
-    protected $database;
-    protected $queryParams;
+    protected static $database;
+    protected static $queryParams;
     
     //Get the query parameter -> used from Database
     public function getQueryParameter() {
-        
-        return $this->queryParams;
+    
+        return self::$queryParams;
     }
     
     //Set query parameters in a assoziative array to generate a proper query
     //Example: array('username'=>$username, 'password'=>$password, 'prename'=>$prename, 'name'=>$name)
-    protected function setQueryParameter(Array $params) {
+    protected static function setQueryParameter(Array $params) {
         
-        $this->queryParams = $params;
+        self::$queryParams = $params;
     }
     
     //Set the database for connection
     public function setDatabase(Database $database) {
-        
-        $this->database = $database;
+    
+        self::$database = $database;
     }
 }

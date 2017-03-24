@@ -33,82 +33,83 @@ class User extends Model {
     const UPDATE_FAIL       = "We could not execute the update, cause of invalid values";
     
     //You can initialize a user with the option to offer the PDO-object at initialization
-    public function __construct(Database $database = NULL) {
+    public function __construct($id = NULL, $username = NULL, $prename = NULL, $name = NULL, $password = NULL) {
         
-        if (!($database == NULL)) {
-            $this->setDatabase($database);
-        }
+        $this->idUser = $id;
+        $this->username = $username;
+        $this->prename = $prename;
+        $this->name = $name;
+        $this->password = $password;
     }
     
     //Verifys a user by his username and password
-    public function verifyUser($username, $password) {
+    public static function verifyUser($username, $password) {
         
-        $this->setQueryParameter(array('username' => $username));
-        if ($result = $this->modelSelect(self::SELECT_PASSWORD_HASH_STATEMENT)) {
-            if ($this->hashPassword($password) == $result['password']) {
-                return TRUE;
-            } else {
-                return FALSE;
-            }
-        } else {
+        self::setQueryParameter(array('username' => $username));
+        if ($user = self::modelSelect(self::SELECT_PASSWORD_HASH_STATEMENT)) {
+            return password_verify($password, $user->getPassword());
+        }
+        else {
             $_GET['Fail'] = self::VERIFICATION_FAIL;
         }
     }
     
-    public function selectUserByName(String $username) {
+    public static function getUserByName(String $username) {
         
-        $this->setQueryParameter(array('username' => $username));
+        self::setQueryParameter(array('username' => $username));
         
-        return $this->modelSelect(self::SELECT_USER_BY_NAME_STATEMENT);
+        return self::modelSelect(self::SELECT_USER_BY_NAME_STATEMENT);
     }
     
-    public function selectUserById(Integer $id) {
+    public static function getUserById(Integer $id) {
         
-        $this->setQueryParameter(array('id' => $id));
+        self::setQueryParameter(array('id' => $id));
         
-        return $this->modelSelect(self::SELECT_USER_BY_ID_STATEMENT);
+        return self::modelSelect(self::SELECT_USER_BY_ID_STATEMENT);
     }
     
     //Adds user after checking if the same username already exists. Retutns true, if successfully added
-    public function addUser(String $username, String $password, String $prename, String $name) {
+    public static function addUser(String $username, String $password, String $prename, String $name) {
         
-        if ($this->userExist($username)) {
+        if (self::userExist($username)) {
             $_GET['Fail'] = "This user is already exists";
             
             return FALSE;
-        } else {
-            $this->setQueryParameter(array('username' => $username, 'password' => $password, 'prename' => $prename, 'name' => $name));
-            $this->modelInsert(self::ADD_USER_STATEMENT);
+        }
+        else {
+            self::setQueryParameter(array('username' => $username, 'password' => $password, 'prename' => $prename, 'name' => $name));
+            self::modelInsert(self::ADD_USER_STATEMENT);
             
             return TRUE;
         }
     }
     
-    public function deleteUser($id) {
+    public static function deleteUser($id) {
         
-        $this->setQueryParameter(array('id' => $id));
-        $this->modelDelete(self::DELETE_USER_BY_ID_STATEMENT);
+        self::setQueryParameter(array('id' => $id));
+        self::modelDelete(self::DELETE_USER_BY_ID_STATEMENT);
     }
     
-    public function updateUser($id, $username = "", $password = "", $prename = "", $name = "") {
+    public function updateUser($id, $username = NULL, $password = NULL, $prename = NULL, $name = NULL) {
         
-        if (!($username == "") && !$this->userExist($username)) {
-            $this->setQueryParameter(array('id' => $id, 'username' => $username));
-            $this->modelUpdate(self::UPDATE_USERNAME_STATEMENT);
-        } else {
+        if (!($username == NULL) && !self::userExist($username)) {
+            self::setQueryParameter(array('id' => $id, 'username' => $username));
+            self::modelUpdate(self::UPDATE_USERNAME_STATEMENT);
+        }
+        else {
             $_GET['This username exists already'];
         }
-        if (!($password == "")) {
-            $this->setQueryParameter(array('id' => $id, 'password' => $password));
-            $this->modelUpdate(self::UPDATE_PASSWORD_STATEMENT);
+        if (!($password == NULL)) {
+            self::setQueryParameter(array('id' => $id, 'password' => $password));
+            self::modelUpdate(self::UPDATE_PASSWORD_STATEMENT);
         }
-        if (!($prename == "")) {
-            $this->setQueryParameter(array('id' => $id, 'prename' => $prename));
-            $this->modelUpdate(self::UPDATE_PRENAME_STATEMENT);
+        if (!($prename == NULL)) {
+            self::setQueryParameter(array('id' => $id, 'prename' => $prename));
+            self::modelUpdate(self::UPDATE_PRENAME_STATEMENT);
         }
-        if (!($name == "")) {
-            $this->setQueryParameter(array('id' => $id, 'name' => $name));
-            $this->modelUpdate(self::UPDATE_NAME_STATEMENT);
+        if (!($name == NULL)) {
+            self::setQueryParameter(array('id' => $id, 'name' => $name));
+            self::modelUpdate(self::UPDATE_NAME_STATEMENT);
         }
     }
     
@@ -117,15 +118,21 @@ class User extends Model {
     const SELECT_PASSWORD_HASH_STATEMENT = 2;
     const SELECT_USER_BY_ID_STATEMENT    = 3;
     
-    private function modelSelect(Integer $whichSelectStatement) {
-        // TODO: Implement modelSelect() method.
+    private static function modelSelect(Integer $whichSelectStatement) {
+        
         switch ($whichSelectStatement) {
             case self::SELECT_USER_BY_NAME_STATEMENT: //SELECT user by his name
-                return $this->database->performQuery(self, self::GET_USER_BY_NAME);
+                $result = self::$database->performQuery(self, self::GET_USER_BY_NAME);
+    
+                return new User(NULL, $result['username'], $result['prename'], $result['name']);
             case self::SELECT_PASSWORD_HASH_STATEMENT: //Get password hash by username for verification
-                return $this->database->performQuery(self, self::GET_PASSWORD_HASH);
+                $result = self::$database->performQuery(self, self::GET_PASSWORD_HASH);
+    
+                return new User(NULL, NULL, NULL, NULL, $result['password']);
             case self::SELECT_USER_BY_ID_STATEMENT:
-                return $this->database->performQuery(self, self::GET_USER_BY_ID);
+                $result = self::$database->performQuery(self, self::GET_USER_BY_ID);
+    
+                return new User(NULL, $result['username'], $result['prename'], $result['name']);
             default:
                 $_GET['Fail'] = self::QUERY_FAIL;
                 break;
@@ -135,11 +142,11 @@ class User extends Model {
     //INSERT
     const ADD_USER_STATEMENT = 1;
     
-    private function modelInsert(Integer $whichInsertStatement) {
-        // TODO: Implement modelInsert() method.
+    private static function modelInsert(Integer $whichInsertStatement) {
+        
         switch ($whichInsertStatement) {
             case self::ADD_USER_STATEMENT:
-                $this->database->performQuery(self, self::ADDUSER);
+                self::$database->performQuery(self, self::ADDUSER);
                 break;
             default:
                 $_GET['Fail'] = self::QUERY_FAIL;
@@ -153,20 +160,20 @@ class User extends Model {
     const UPDATE_PRENAME_STATEMENT  = 3;
     const UPDATE_NAME_STATEMENT     = 4;
     
-    private function modelUpdate(Integer $whichUpdateStatement) {
-        // TODO: Implement modelUpdate() method.
+    private static function modelUpdate(Integer $whichUpdateStatement) {
+        
         switch ($whichUpdateStatement) {
             case self::UPDATE_USERNAME_STATEMENT:
-                $this->database->performQuery(self, self::UPDATE_USERNAME);
+                self::$database->performQuery(self, self::UPDATE_USERNAME);
                 break;
             case self::UPDATE_PASSWORD_STATEMENT:
-                $this->database->performQuery(self, self::UPDATE_PASSWORD);
+                self::$database->performQuery(self, self::UPDATE_PASSWORD);
                 break;
             case self::UPDATE_PRENAME_STATEMENT:
-                $this->database->performQuery(self, self::UPDATE_PRENAME);
+                self::$database->performQuery(self, self::UPDATE_PRENAME);
                 break;
             case self::UPDATE_NAME_STATEMENT:
-                $this->database->performQuery(self, self::UPDATE_NAME);
+                self::$database->performQuery(self, self::UPDATE_NAME);
                 break;
             default:
                 $_GET['Fail'] = self::QUERY_FAIL;
@@ -177,11 +184,11 @@ class User extends Model {
     //DELETE
     const DELETE_USER_BY_ID_STATEMENT = 1;
     
-    private function modelDelete(Integer $whichDeleteStatement) {
-        // TODO: Implement modelDelete() method.
+    private static function modelDelete(Integer $whichDeleteStatement) {
+        
         switch ($whichDeleteStatement) {
             case self::DELETE_USER_BY_ID_STATEMENT:
-                $this->database->performQuery(self, self::DELETE_USER_BY_ID);
+                self::$database->performQuery(self, self::DELETE_USER_BY_ID);
                 break;
             default:
                 $_GET['Fail'] = self::QUERY_FAIL;
@@ -190,12 +197,13 @@ class User extends Model {
     }
     
     //checks if a user exists or not
-    private function userExist($username) {
+    private static function userExist($username) {
         
-        $result = $this->modelSelect(1);
-        if ($result['username'] == "" || empty($result['username'])) {
+        $user = self::modelSelect(self::SELECT_USER_BY_NAME_STATEMENT);
+        if (!($user->getUsername() == NULL)) {
             return FALSE;
-        } else {
+        }
+        else {
             return TRUE;
         }
     }
@@ -205,4 +213,30 @@ class User extends Model {
         
         return password_hash($passwordClear, PASSWORD_DEFAULT);
     }
+    
+    public function getIdUser() {
+        
+        return $this->idUser;
+    }
+    
+    public function getUsername() {
+        
+        return $this->username;
+    }
+    
+    public function getPrename() {
+        
+        return $this->prename;
+    }
+    
+    public function getName() {
+        
+        return $this->name;
+    }
+    
+    public function getPassword() {
+        
+        return $this->password;
+    }
+    
 }
