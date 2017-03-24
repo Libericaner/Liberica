@@ -1,5 +1,4 @@
-# php-mvc
-
+# Liberica
 This php mvc framework is a school project.
 
 # License
