@@ -7,6 +7,8 @@
  */
 class Database {
     
+    const DB_FAIL = "Error while loading database connection. Please check the params";
+    
     private $host;
     private $username;
     private $password;
@@ -20,6 +22,8 @@ class Database {
         $this->username = $username;
         $this->password = $password;
         $this->database = $database;
+    
+        $this->getDatabaseConnection();
     }
     
     public function getDatabaseConnection() {
@@ -27,9 +31,10 @@ class Database {
         $conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->database, $this->username, $this->password);
         if ($conn->connect_error == "") {
             $this->connection = $conn;
+            
             return $conn;
         } else {
-            die("Error while loading database connection. Please check the params");
+            die(self::DB_FAIL);
         }
     }
     
