@@ -7,56 +7,54 @@
  */
 class User extends Model {
     
-    private $idUser;
-    private $username;
+    private $id;
+    private $email;
     private $password;
     private $prename;
     private $name;
     
     //TODO : create query-pattern
-    const GET_USER_BY_NAME = "SELECT username, prename, name FROM user WHERE username = :username LIMIT 1;";
-    const GET_USER_BY_ID   = "SELECT username, prename, name FROM user WHERE idUser = :id;";
-    const ADD_USER         = "INSERT INTO user (username, password, prename, name) VALUES (:username, :password, :prename, :name);";
+    const GET_USER_BY_NAME = "SELECT email FROM user WHERE email = :email LIMIT 1;";
+    const GET_USER_BY_ID   = "SELECT email FROM user WHERE id = :id;";
+    const ADD_USER         = "INSERT INTO user (email, password) VALUES (:email, :password);";
     
-    const GET_PASSWORD_HASH = "SELECT password FROM user WHERE username = :username LIMIT 1;";
+    const GET_PASSWORD_HASH = "SELECT password FROM user WHERE email = :email LIMIT 1;";
     
-    const UPDATE_USERNAME = "UPDATE user SET username = :username WHERE idUser = :id;";
-    const UPDATE_PASSWORD = "UPDATE user SET password = :password WHERE idUser = :id;";
-    const UPDATE_PRENAME  = "UPDATE user SET prename = :prename WHERE idUser = :id;";
-    const UPDATE_NAME     = "UPDATE user SET name = :name WHERE idUser = :id;";
+    const UPDATE_USERNAME = "UPDATE user SET email = :email WHERE id = :id;";
+    const UPDATE_PASSWORD = "UPDATE user SET password = :password WHERE id = :id;";
     
-    const DELETE_USER_BY_ID = "DELETE FROM user WHERE idUser = :id;";
+    const DELETE_USER_BY_ID = "DELETE FROM user WHERE id = :id;";
     
     //FAILS
     const VERIFICATION_FAIL = "username or password is invalid";
     const QUERY_FAIL        = "We could not find this query";
     const UPDATE_FAIL       = "We could not execute the update, cause of invalid values";
     
+    private static $fails;
+    
     //You can initialize a user with the option to offer the PDO-object at initialization
-    public function __construct($id = NULL, $username = NULL, $prename = NULL, $name = NULL, $password = NULL) {
+    public function __construct($id = NULL, $email = NULL, $password = NULL) {
         
         $this->idUser = $id;
-        $this->username = $username;
-        $this->prename = $prename;
-        $this->name = $name;
+        $this->email = $email;
         $this->password = $password;
     }
     
     //Verifys a user by his username and password
-    public static function verifyUser($username, $password) {
+    public static function verifyUser($email, $password) {
         
-        self::setQueryParameter(array('username' => $username));
+        self::setQueryParameter(array('email' => $email));
         if ($user = self::modelSelect(self::SELECT_PASSWORD_HASH_STATEMENT)) {
             return password_verify($password, $user->getPassword());
         }
         else {
-            $_GET['Fail'] = self::VERIFICATION_FAIL;
+            self::$fails = self::VERIFICATION_FAIL;
         }
     }
     
-    public static function getUserByName(String $username) {
+    public static function getUserByEmail(String $email) {
         
-        self::setQueryParameter(array('username' => $username));
+        self::setQueryParameter(array('username' => $email));
         
         return self::modelSelect(self::SELECT_USER_BY_NAME_STATEMENT);
     }
@@ -69,15 +67,15 @@ class User extends Model {
     }
     
     //Adds user after checking if the same username already exists. Retutns true, if successfully added
-    public static function addUser(String $username, String $password, String $prename, String $name) {
+    public static function addUser(String $email, String $password) {
         
-        if (self::userExist($username)) {
+        if (self::userExist($email)) {
             $_GET['Fail'] = "This user is already exists";
             
             return FALSE;
         }
         else {
-            self::setQueryParameter(array('username' => $username, 'password' => $password, 'prename' => $prename, 'name' => $name));
+            self::setQueryParameter(array('username' => $email, 'password' => $password));
             self::modelInsert(self::ADD_USER_STATEMENT);
             
             return TRUE;
@@ -90,10 +88,10 @@ class User extends Model {
         self::modelDelete(self::DELETE_USER_BY_ID_STATEMENT);
     }
     
-    public function updateUser($id, $username = NULL, $password = NULL, $prename = NULL, $name = NULL) {
+    public function updateUser($id, $email = NULL, $password = NULL) {
         
-        if (!($username == NULL) && !self::userExist($username)) {
-            self::setQueryParameter(array('id' => $id, 'username' => $username));
+        if (!($email == NULL) && !self::userExist($email)) {
+            self::setQueryParameter(array('id' => $id, 'username' => $email));
             self::modelUpdate(self::UPDATE_USERNAME_STATEMENT);
         }
         else {
@@ -103,14 +101,11 @@ class User extends Model {
             self::setQueryParameter(array('id' => $id, 'password' => $password));
             self::modelUpdate(self::UPDATE_PASSWORD_STATEMENT);
         }
-        if (!($prename == NULL)) {
-            self::setQueryParameter(array('id' => $id, 'prename' => $prename));
-            self::modelUpdate(self::UPDATE_PRENAME_STATEMENT);
-        }
-        if (!($name == NULL)) {
-            self::setQueryParameter(array('id' => $id, 'name' => $name));
-            self::modelUpdate(self::UPDATE_NAME_STATEMENT);
-        }
+    }
+    
+    public static function getFail() {
+        
+        return self::fails;
     }
     
     //SELECT
@@ -118,23 +113,24 @@ class User extends Model {
     const SELECT_PASSWORD_HASH_STATEMENT = 2;
     const SELECT_USER_BY_ID_STATEMENT    = 3;
     
-    private static function modelSelect(Integer $whichSelectStatement) {
+    private static function modelSelect($whichSelectStatement) {
         
+        $u = new User();
         switch ($whichSelectStatement) {
             case self::SELECT_USER_BY_NAME_STATEMENT: //SELECT user by his name
-                $result = self::$database->performQuery(self, self::GET_USER_BY_NAME);
+                $result = self::$database->performQuery($u, self::GET_USER_BY_NAME);
     
-                return new User(NULL, $result['username'], $result['prename'], $result['name']);
+                return new User(NULL, $result[0]['username']);
             case self::SELECT_PASSWORD_HASH_STATEMENT: //Get password hash by username for verification
-                $result = self::$database->performQuery(self, self::GET_PASSWORD_HASH);
+                $result = self::$database->performQuery($u, self::GET_PASSWORD_HASH);
     
-                return new User(NULL, NULL, NULL, NULL, $result['password']);
+                return new User(NULL, NULL, $result[0]['password']);
             case self::SELECT_USER_BY_ID_STATEMENT:
-                $result = self::$database->performQuery(self, self::GET_USER_BY_ID);
+                $result = self::$database->performQuery($u, self::GET_USER_BY_ID);
     
-                return new User(NULL, $result['username'], $result['prename'], $result['name']);
+                return new User(NULL, $result[0]['email']);
             default:
-                $_GET['Fail'] = self::QUERY_FAIL;
+                self::$fails = self::QUERY_FAIL;
                 break;
         }
     }
@@ -142,14 +138,15 @@ class User extends Model {
     //INSERT
     const ADD_USER_STATEMENT = 1;
     
-    private static function modelInsert(Integer $whichInsertStatement) {
+    private static function modelInsert($whichInsertStatement) {
         
+        $u = new User();
         switch ($whichInsertStatement) {
             case self::ADD_USER_STATEMENT:
-                self::$database->performQuery(self, self::ADDUSER);
+                self::$database->performQuery($u, self::ADD_USER);
                 break;
             default:
-                $_GET['Fail'] = self::QUERY_FAIL;
+                self::$fails = self::QUERY_FAIL;
                 break;
         }
     }
@@ -160,23 +157,24 @@ class User extends Model {
     const UPDATE_PRENAME_STATEMENT  = 3;
     const UPDATE_NAME_STATEMENT     = 4;
     
-    private static function modelUpdate(Integer $whichUpdateStatement) {
+    private static function modelUpdate($whichUpdateStatement) {
         
+        $u = new User();
         switch ($whichUpdateStatement) {
             case self::UPDATE_USERNAME_STATEMENT:
-                self::$database->performQuery(self, self::UPDATE_USERNAME);
+                self::$database->performQuery($u, self::UPDATE_USERNAME);
                 break;
             case self::UPDATE_PASSWORD_STATEMENT:
-                self::$database->performQuery(self, self::UPDATE_PASSWORD);
+                self::$database->performQuery($u, self::UPDATE_PASSWORD);
                 break;
             case self::UPDATE_PRENAME_STATEMENT:
-                self::$database->performQuery(self, self::UPDATE_PRENAME);
+                self::$database->performQuery($u, self::UPDATE_PRENAME);
                 break;
             case self::UPDATE_NAME_STATEMENT:
-                self::$database->performQuery(self, self::UPDATE_NAME);
+                self::$database->performQuery($u, self::UPDATE_NAME);
                 break;
             default:
-                $_GET['Fail'] = self::QUERY_FAIL;
+                self::$fails = self::QUERY_FAIL;
                 break;
         }
     }
@@ -184,27 +182,29 @@ class User extends Model {
     //DELETE
     const DELETE_USER_BY_ID_STATEMENT = 1;
     
-    private static function modelDelete(Integer $whichDeleteStatement) {
+    private static function modelDelete($whichDeleteStatement) {
         
+        $u = new User();
         switch ($whichDeleteStatement) {
             case self::DELETE_USER_BY_ID_STATEMENT:
-                self::$database->performQuery(self, self::DELETE_USER_BY_ID);
+                self::$database->performQuery($u, self::DELETE_USER_BY_ID);
                 break;
             default:
-                $_GET['Fail'] = self::QUERY_FAIL;
+                self::$fails = self::QUERY_FAIL;
                 break;
         }
     }
     
     //checks if a user exists or not
-    private static function userExist($username) {
+    private static function userExist($email) {
         
+        self::setQueryParameter(array('email' => $email));
         $user = self::modelSelect(self::SELECT_USER_BY_NAME_STATEMENT);
         if (!($user->getUsername() == NULL)) {
-            return FALSE;
+            return TRUE;
         }
         else {
-            return TRUE;
+            return FALSE;
         }
     }
     
