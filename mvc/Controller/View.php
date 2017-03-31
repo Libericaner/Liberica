@@ -15,7 +15,6 @@ class View {
     const SUFFIX   = '.view.php';
     const LOCATION = 'mvc/Views/'; // Relative to index.php
     const PATTERN  = self::LOCATION . '*' . self::SUFFIX;
-    const ERROR    = '404';
     
     const NO404FOUND = 'Kein gültiger Pfad und 404 View wurde nicht gefunden';
     
@@ -66,7 +65,7 @@ class View {
     
     public static function get404Path() {
         
-        $errorPath = self::getViewPath(self::ERROR);
+        $errorPath = self::getViewPath(ERROR_PAGE);
         
         if (!is_file($errorPath))
             die(self::NO404FOUND);

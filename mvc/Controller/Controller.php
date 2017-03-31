@@ -19,7 +19,7 @@ class Controller {
     public function __construct($uViewId) {
         
         if (!isset($_POST['sub']))
-            $u = 'NULL';
+            $u = 'NULL'; // TODO: bad fallback value
         else
             $u = $this->run($_POST['sub']);
         
