@@ -24,20 +24,34 @@ function XtoHome() {
     exit;
 }
 
-function Xlogin()
-{
-    if (isset($_POST['username'], $_POST['password']) && !empty($_POST['username']))
-    {
-        if ($_POST['username'] === 'foo' && $_POST['password'] === 'bar')
-        {
+function Xlogin() {
+    
+    if (isset($_POST['username'], $_POST['password']) && !empty($_POST['username'])) {
+        if (User::verifyUser($_POST['username'], $_POST['password'])) {
             $_SESSION['u'] = $_POST['username'];
-            header('Location: ./?view=hidden');
+            header("Location: ./?view=hidden");
             exit;
         }
-        return 'Falsch';
+        return 'Falsche Anmeldedaten';
     }
-    else
-    {
+    else {
         return 'Gibb etwas ein';
     }
+}
+
+function Xregister() {
+    if (isset($_POST['user'], $_POST['password']) && !empty($_POST['user']) && !empty($_POST['password']))
+    {
+        if (User::addUser($_POST['user'], $_POST['password']))
+        {
+            if (User::verifyUser($_POST['user'], $_POST['password'])) {
+                $_SESSION['u'] = $_POST['user'];
+                header("Location: ./?view=hidden");
+                exit;
+            }
+            return 'Es ist ein Fehler aufgetreten';
+        }
+        return 'User konnte nicht registriert werden';
+    }
+    return 'Fülle alle Felder aus';
 }

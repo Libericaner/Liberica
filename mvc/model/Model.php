@@ -25,7 +25,7 @@ abstract class Model {
     }
     
     //Set the database for connection
-    public function setDatabase(Database $database) {
+    public static function setDatabase(Database $database) {
     
         self::$database = $database;
     }
