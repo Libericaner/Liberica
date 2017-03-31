@@ -5,6 +5,9 @@
  * Date: 17.03.2017
  * Time: 08:43
  */
+
+require_once "mvc/model/Model.php";
+
 class User extends Model {
     
     private $id;
@@ -54,7 +57,7 @@ class User extends Model {
     
     public static function getUserByEmail(String $email) {
         
-        self::setQueryParameter(array('username' => $email));
+        self::setQueryParameter(array('email' => $email));
         
         return self::modelSelect(self::SELECT_USER_BY_NAME_STATEMENT);
     }
@@ -75,7 +78,7 @@ class User extends Model {
             return FALSE;
         }
         else {
-            self::setQueryParameter(array('username' => $email, 'password' => $password));
+            self::setQueryParameter(array('email' => $email, 'password' => self::hashPassword($password)));
             self::modelInsert(self::ADD_USER_STATEMENT);
             
             return TRUE;
@@ -119,8 +122,12 @@ class User extends Model {
         switch ($whichSelectStatement) {
             case self::SELECT_USER_BY_NAME_STATEMENT: //SELECT user by his name
                 $result = self::$database->performQuery($u, self::GET_USER_BY_NAME);
-    
-                return new User(NULL, $result[0]['username']);
+                
+                if (count($result) == 0)
+                {
+                    return new User();
+                }
+                return new User(NULL, $result[0]['email']);
             case self::SELECT_PASSWORD_HASH_STATEMENT: //Get password hash by username for verification
                 $result = self::$database->performQuery($u, self::GET_PASSWORD_HASH);
     
@@ -200,7 +207,7 @@ class User extends Model {
         
         self::setQueryParameter(array('email' => $email));
         $user = self::modelSelect(self::SELECT_USER_BY_NAME_STATEMENT);
-        if (!($user->getUsername() == NULL)) {
+        if (!($user->getEmail() == NULL)) {
             return TRUE;
         }
         else {
@@ -209,19 +216,19 @@ class User extends Model {
     }
     
     //Hashs the password and returns it
-    private function hashPassword($passwordClear) {
+    private static function hashPassword($passwordClear) {
         
         return password_hash($passwordClear, PASSWORD_DEFAULT);
     }
     
     public function getIdUser() {
         
-        return $this->idUser;
+        return $this->id;
     }
     
-    public function getUsername() {
+    public function getEmail() {
         
-        return $this->username;
+        return $this->email;
     }
     
     public function getPrename() {

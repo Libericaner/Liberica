@@ -11,6 +11,8 @@ const MVC_CONTROLLER = 'mvc/Controller/';
 require_once MVC_CONTROLLER . 'View.php'; // Relative to index.php
 require_once MVC_CONTROLLER . 'file.php';
 
+require_once 'mvc/database/DBConnection.php';
+
 require_once MVC_CONTROLLER . 'commands.php';
 
 

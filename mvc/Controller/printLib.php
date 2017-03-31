@@ -32,6 +32,8 @@ function printMenu() {
             <?=menuItem('404', 'Error Page')?>
             <?=menuItem('cc', 'Controll Center')?>
             <?=menuItem('login', 'Login')?>
+            <?=menuItem('logout', 'Logout')?>
+            <?=menuItem('register', 'Registrieren')?>
         </ul>
     </nav>
     <?php

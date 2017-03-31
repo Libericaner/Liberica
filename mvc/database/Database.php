@@ -27,18 +27,18 @@ class Database {
     }
     
     public function getDatabaseConnection() {
-        
-        $conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->database, $this->username, $this->password);
-        if ($conn->connect_error == "") {
+    
+        try {
+            $conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->database, $this->username, $this->password);
             $this->connection = $conn;
-            
             return $conn;
-        } else {
-            die(self::DB_FAIL);
+        } catch (PDOException $e) {
+            echo 'Verbindung fehlgeschlagen: ' . $e->getMessage();
+            exit;
         }
     }
     
-    public function performQuery(Model $model, String $queryPattern) {
+    public function performQuery(Model $model, $queryPattern) {
         
         $stmt = $this->connection->prepare($queryPattern);
         
