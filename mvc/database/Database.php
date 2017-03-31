@@ -38,10 +38,18 @@ class Database {
         }
     }
     
-    public function performQuery(Queryable $model, String $queryPattern) {
+    public function performQuery(Model $model, String $queryPattern) {
         
         $stmt = $this->connection->prepare($queryPattern);
         
-        return $stmt->execute($model->getQueryParameter());
+        $stmt->execute($model->getQueryParameter());
+        
+        $result = array();
+        
+        while ($record = $stmt->fetch()) {
+            $result[] = $record;
+        }
+        
+        return $result;
     }
 }
