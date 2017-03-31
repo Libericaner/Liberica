@@ -31,6 +31,7 @@ function printMenu() {
             <?=menuItem('demo', 'Demo')?>
             <?=menuItem('404', 'Error Page')?>
             <?=menuItem('cc', 'Controll Center')?>
+            <?=menuItem('login', 'Login')?>
         </ul>
     </nav>
     <?php

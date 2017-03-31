@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 /**
  * User: Emaro
  * Date: 2017-03-10

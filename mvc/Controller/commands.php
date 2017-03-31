@@ -23,3 +23,21 @@ function XtoHome() {
     header('Location: ./?view=home');
     exit;
 }
+
+function Xlogin()
+{
+    if (isset($_POST['username'], $_POST['password']) && !empty($_POST['username']))
+    {
+        if ($_POST['username'] === 'foo' && $_POST['password'] === 'bar')
+        {
+            $_SESSION['u'] = $_POST['username'];
+            header('Location: ./?view=hidden');
+            exit;
+        }
+        return 'Falsch';
+    }
+    else
+    {
+        return 'Gibb etwas ein';
+    }
+}

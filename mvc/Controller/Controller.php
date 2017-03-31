@@ -32,7 +32,11 @@ class Controller {
         
         foreach ($form as $k => $v) {
             $f = 'X' . $k;
-            return $f();
+            if (function_exists($f))
+            {
+                return $f();
+            }
+            return 'Nicht erkannt';
         }
     }
 }
