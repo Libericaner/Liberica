@@ -14,16 +14,16 @@
     <br>
     <input name="pw-repeat" placeholder="Password" type="password">
     <br>
-    <input name="sub[register]" type="submit">
+    <input name="sub[registerUser]" type="submit">
 </form>
 <br>
 <form action="./?view=cc" method="post">
     <input name="data" type="text">
     <input name="command" type="hidden" value="save-string">
-    <input type="submit" name="sub[file]" value="Save String!">
+    <input type="submit" name="sub[saveTextToFile]" value="Save String!">
 </form><br>
 <form action="./?view=cc" method="post">
-    <input type="submit" name="sub[redir]" value="Submit and redirect">
+    <input type="submit" name="sub[toHome]" value="Submit and redirect">
 </form>
 <br>
 <div>

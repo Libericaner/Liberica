@@ -9,7 +9,26 @@
 require_once 'mvc/Controller/View.php'; // Relative to index.php
 require_once 'mvc/Controller/file.php';
 
-$u;
+
+
+
+function XsaveTextToFile() {
+    
+    fileAppend($_POST['data']);
+    return 'saved in file: ' . $_POST['data'];
+}
+
+function XregisterUser() {
+    
+    return 'User "' . $_POST['name'] . '" registered';
+}
+
+function XtoHome() {
+    
+    header('Location: ./?view=home');
+    exit;
+}
+
 
 class Controller {
     
@@ -27,19 +46,14 @@ class Controller {
     
     private function run($cmd) {
         
-        if (isset($cmd['file'])) {
-            
-            fileAppend($_POST['data']);
-            return 'saved in file: ' . $_POST['data'];
-        }
-        elseif (isset($cmd['register'])) {
-            
-            return 'User "' . $_POST['name'] . '" registered';
-        }
-        elseif (isset($cmd['redir'])) {
-            
-            header('Location: ./?view=home');
-            exit;
+        return $this->_run($cmd);
+    }
+    
+    private function _run($form) {
+        var_dump($form);
+        foreach ($form as $k => $v) {
+            $f = 'X' . $k;
+            return $f();
         }
     }
 }
