@@ -6,28 +6,12 @@
  * Time: 10:53
  */
 
-require_once 'mvc/Controller/View.php'; // Relative to index.php
-require_once 'mvc/Controller/file.php';
+const MVC_CONTROLLER = 'mvc/Controller/';
 
+require_once MVC_CONTROLLER . 'View.php'; // Relative to index.php
+require_once MVC_CONTROLLER . 'file.php';
 
-
-
-function XsaveTextToFile() {
-    
-    fileAppend($_POST['data']);
-    return 'saved in file: ' . $_POST['data'];
-}
-
-function XregisterUser() {
-    
-    return 'User "' . $_POST['name'] . '" registered';
-}
-
-function XtoHome() {
-    
-    header('Location: ./?view=home');
-    exit;
-}
+require_once MVC_CONTROLLER . 'commands.php';
 
 
 class Controller {
@@ -44,13 +28,8 @@ class Controller {
         $view->show($u);
     }
     
-    private function run($cmd) {
+    private function run($form) {
         
-        return $this->_run($cmd);
-    }
-    
-    private function _run($form) {
-        var_dump($form);
         foreach ($form as $k => $v) {
             $f = 'X' . $k;
             return $f();
