@@ -5,9 +5,10 @@
  * Time: 10:47
  */
 
+require_once "mvc/config.php";
 require_once "mvc/Controller/Controller.php";
 
-$view = '';
+$view = DEFAULT_PAGE;
 
 if (isset($_GET['view']))
     $view = $_GET['view'];

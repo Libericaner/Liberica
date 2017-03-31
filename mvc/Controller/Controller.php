@@ -6,17 +6,20 @@
  * Time: 10:53
  */
 
-require_once 'mvc/Controller/View.php'; // Relative to index.php
-require_once 'mvc/Controller/file.php';
+const MVC_CONTROLLER = 'mvc/Controller/';
 
-$u;
+require_once MVC_CONTROLLER . 'View.php'; // Relative to index.php
+require_once MVC_CONTROLLER . 'file.php';
+
+require_once MVC_CONTROLLER . 'commands.php';
+
 
 class Controller {
     
     public function __construct($uViewId) {
         
         if (!isset($_POST['sub']))
-            $u = 'NULL';
+            $u = 'NULL'; // TODO: bad fallback value
         else
             $u = $this->run($_POST['sub']);
         
@@ -25,21 +28,15 @@ class Controller {
         $view->show($u);
     }
     
-    private function run($cmd) {
+    private function run($form) {
         
-        if (isset($cmd['file'])) {
-            
-            fileAppend($_POST['data']);
-            return 'saved in file: ' . $_POST['data'];
-        }
-        elseif (isset($cmd['register'])) {
-            
-            return 'User "' . $_POST['name'] . '" registered';
-        }
-        elseif (isset($cmd['redir'])) {
-            
-            header('Location: ./?view=home');
-            exit;
+        foreach ($form as $k => $v) {
+            $f = 'X' . $k;
+            if (function_exists($f))
+            {
+                return $f();
+            }
+            return 'Nicht erkannt';
         }
     }
 }

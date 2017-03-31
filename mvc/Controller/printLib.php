@@ -15,14 +15,10 @@ function printHead($title = 'PHP-MVC by DJM') {
     
     <!DOCTYPE html>
     
-    <head>
-        <meta charset="UTF-8">
-        <title><?=$title?></title>
-        
-        <link rel="stylesheet" href="css/main.css">
-    </head>
+    <meta charset="UTF-8"><title><?=$title?></title>
     
-    <body>
+    <link rel="stylesheet" href="css/main.css">
+    
     <?php
 }
 
@@ -32,28 +28,30 @@ function printMenu() {
     
     <nav>
         <ul>
-            <li><?=viewLink('demo', 'Demo')?></li>
-            <?=li(viewLink('404', 'Error Page'))?>
-            <?=li(viewLink('cc', 'Controll Center'))?>
+            <?=menuItem('demo', 'Demo')?>
+            <?=menuItem('404', 'Error Page')?>
+            <?=menuItem('cc', 'Controll Center')?>
+            <?=menuItem('login', 'Login')?>
         </ul>
     </nav>
     <?php
 }
 
 function printFoot() {
+    
     ?>
+    
     <br>
     <footer>
-        <p>&#169; 2017 - David Schor, Joel Häberli, Miro Albrecht</p>
+        <p>&#169; 2017 - David Schor, Joel Häberli, Miro Albrecht
     </footer>
     
-    </body>
     <?php
 }
 
-function li($html) {
+function menuItem($ref, $label) {
     
-    return '<li>' . $html . '</li>';
+    return '<li>' . viewLink($ref, $label) . "\n";
 }
 
 function viewLink($view, $label) {

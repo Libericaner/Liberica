@@ -6,7 +6,10 @@
  */
 ?>
 
-<h1>Controller</h1><p><?=printIfSet($arg)?></p>
+<h1>Controller</h1>
+
+<p><?=printIfSet($arg)?>
+
 <form action="./?view=cc" method="post">
     <input name="name" placeholder="Name" type="text">
     <br>
@@ -14,19 +17,21 @@
     <br>
     <input name="pw-repeat" placeholder="Password" type="password">
     <br>
-    <input name="sub[register]" type="submit">
-</form>
-<br>
+    <input name="sub[registerUser]" type="submit">
+</form><br>
+
 <form action="./?view=cc" method="post">
     <input name="data" type="text">
     <input name="command" type="hidden" value="save-string">
-    <input type="submit" name="sub[file]" value="Save String!">
+    <input type="submit" name="sub[saveTextToFile]" value="Save String!">
 </form><br>
+
 <form action="./?view=cc" method="post">
-    <input type="submit" name="sub[redir]" value="Submit and redirect">
-</form>
-<br>
+    <input type="submit" name="sub[toHome]" value="Submit and redirect">
+</form><br>
+
 <div>
-    <p><strong>file.txt</strong> stores the follwing content:</p>
-    <?=printFile()?>
+    <p><strong>file.txt</strong> stores the follwing content:
+    <p><?=printFile()?>
+
 </div>

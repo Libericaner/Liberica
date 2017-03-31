@@ -13,6 +13,7 @@ function printFile() {
         return;
     
     foreach ($f as $uLine) {
+        $uLine = substr($uLine, 0, strlen($uLine) - 1);
         echo htmlentities($uLine) . '<br>';
     }
 }
