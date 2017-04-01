@@ -7,4 +7,5 @@
 
 session_destroy();
 
-XtoHome();
+header('Location: ./?view=login');
+exit;

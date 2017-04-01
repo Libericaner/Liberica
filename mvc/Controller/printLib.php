@@ -24,16 +24,18 @@ function printHead($title = 'PHP-MVC by DJM') {
 
 function printMenu() {
     
+    $whenUserIsSet = isset($_SESSION['u']);
+    
     ?>
     
     <nav>
         <ul>
             <?=menuItem('demo', 'Demo')?>
             <?=menuItem('404', 'Error Page')?>
-            <?=menuItem('cc', 'Controll Center')?>
-            <?=menuItem('login', 'Login')?>
-            <?=menuItem('logout', 'Logout')?>
-            <?=menuItem('register', 'Registrieren')?>
+            <?=menuItem('cc', 'Controll Center', $whenUserIsSet)?>
+            <?=menuItem('login', 'Login', !$whenUserIsSet)?>
+            <?=menuItem('logout', 'Logout', $whenUserIsSet)?>
+            <?=menuItem('register', 'Registrieren', !$whenUserIsSet)?>
         </ul>
     </nav>
     <?php
@@ -51,9 +53,9 @@ function printFoot() {
     <?php
 }
 
-function menuItem($ref, $label) {
+function menuItem($ref, $label, $condition = TRUE) {
     
-    return '<li>' . viewLink($ref, $label) . "\n";
+    return $condition ? '<li>' . viewLink($ref, $label) . "\n" : "";
 }
 
 function viewLink($view, $label) {
