@@ -31,7 +31,6 @@ function printMenu() {
     <nav>
         <ul>
             <?=menuItem('demo', 'Demo')?>
-            <?=menuItem('404', 'Error Page')?>
             <?=menuItem('cc', 'Controll Center', $whenUserIsSet)?>
             <?=menuItem('login', 'Login', !$whenUserIsSet)?>
             <?=menuItem('logout', 'Logout', $whenUserIsSet)?>
