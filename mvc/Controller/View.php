@@ -29,6 +29,8 @@ class View {
     
     public function show($arg) {
         
+        $isLoggedIn = isset($_SESSION['u']);
+        
         printHead();
         
         printMenu();

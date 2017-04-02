@@ -34,6 +34,11 @@ function printMenu() {
             <?=menuItem('register', 'Registrieren', !$whenUserIsSet)?>
             <?=menuItem('hidden', 'Übersicht', $whenUserIsSet)?>
             <?=menuItem('logout', 'Logout', $whenUserIsSet)?>
+            <?=menuItem('demo', 'Demo')?>
+            <?=menuItem('cc', 'Controll Center', $whenUserIsSet)?>
+            <?=menuItem('login', 'Login', !$whenUserIsSet)?>
+            <?=menuItem('logout', 'Logout', $whenUserIsSet)?>
+            <?=menuItem('register', 'Registrieren', !$whenUserIsSet)?>
         </ul>
         <hr>
     </nav>
