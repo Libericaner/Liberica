@@ -14,7 +14,7 @@ if (isset($_SESSION['u']))
 
 <h1>Registrieren</h1>
 
-<?=printIfSet($arg)?>
+<p class="error"><?=printIfSet($arg)?>
 
 <form action="./?view=register" method="post">
     <input type="text" name="user" placeholder="Username">

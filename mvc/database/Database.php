@@ -7,7 +7,7 @@
  */
 class Database {
     
-    const DB_FAIL = "Error while loading database connection. Please check the params";
+    const DB_FAIL = "Error while loading Database connection. Please check the params";
     
     private $host;
     private $username;

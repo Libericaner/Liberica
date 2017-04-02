@@ -17,7 +17,7 @@ function printHead($title = 'PHP-MVC by DJM') {
     
     <meta charset="UTF-8"><title><?=$title?></title>
     
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="<?=CSS_PATH?>">
     
     <?php
 }
@@ -30,12 +30,12 @@ function printMenu() {
     
     <nav>
         <ul>
-            <?=menuItem('demo', 'Demo')?>
-            <?=menuItem('cc', 'Controll Center', $whenUserIsSet)?>
             <?=menuItem('login', 'Login', !$whenUserIsSet)?>
-            <?=menuItem('logout', 'Logout', $whenUserIsSet)?>
             <?=menuItem('register', 'Registrieren', !$whenUserIsSet)?>
+            <?=menuItem('hidden', 'Übersicht', $whenUserIsSet)?>
+            <?=menuItem('logout', 'Logout', $whenUserIsSet)?>
         </ul>
+        <hr>
     </nav>
     <?php
 }
@@ -72,5 +72,5 @@ function printIfSet($var) {
     if ($var)
         return $var;
     
-    return "NULL";
+    return "";
 }

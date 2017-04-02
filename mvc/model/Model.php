@@ -7,7 +7,7 @@
  */
 abstract class Model {
     
-    //the database instance used by the model to communicate with the database
+    //the Database instance used by the Model to communicate with the Database
     protected static $database;
     protected static $queryParams;
     
@@ -24,7 +24,7 @@ abstract class Model {
         self::$queryParams = $params;
     }
     
-    //Set the database for connection
+    //Set the Database for connection
     public static function setDatabase(Database $database) {
     
         self::$database = $database;
