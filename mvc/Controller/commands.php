@@ -7,16 +7,6 @@
  * Each method need the prefix X (for Xecurity). Without it can't be called from a form
  */
 
-function XsaveTextToFile() {
-    
-    fileAppend($_POST['data']);
-    return 'saved in file: ' . $_POST['data'];
-}
-
-function XregisterUser() {
-    
-    return 'User "' . $_POST['name'] . '" registered';
-}
 
 function XtoHome() {
     
@@ -26,7 +16,7 @@ function XtoHome() {
 
 function Xlogin() {
     
-    if (isset($_POST['username'], $_POST['password']) && !empty($_POST['username'])) {
+    if (isset($_POST['username'], $_POST['password']) && !empty($_POST['username']) && !empty($_POST['password'])) {
         if (User::verifyUser($_POST['username'], $_POST['password'])) {
             $_SESSION['u'] = $_POST['username'];
             header("Location: ./?view=hidden");
@@ -35,7 +25,7 @@ function Xlogin() {
         return 'Falsche Anmeldedaten';
     }
     else {
-        return 'Gibb etwas ein';
+        return 'Gibb überall etwas ein';
     }
 }
 

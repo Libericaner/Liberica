@@ -15,7 +15,7 @@ if (isset($_SESSION['u']))
 
 <h1>Login</h1>
 
-<p><?=printIfSet($arg)?>
+<p class="error"><?=printIfSet($arg)?>
 
 <form action="./?view=login" method="post">
     <input type="text" name="username" placeholder="Username">
