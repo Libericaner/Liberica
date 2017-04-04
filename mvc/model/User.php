@@ -46,11 +46,15 @@ class User extends Model {
     //Verifys a user by his username and password
     public static function verifyUser($email, $password) {
         
-        self::setQueryParameter(array('email' => $email));
-        if ($user = self::modelSelect(self::SELECT_PASSWORD_HASH_STATEMENT)) {
-            return password_verify($password, $user->getPassword());
-        }
-        else {
+        if (self::userExist($email)) {
+            self::setQueryParameter(array('email' => $email));
+            if ($user = self::modelSelect(self::SELECT_PASSWORD_HASH_STATEMENT)) {
+                return password_verify($password, $user->getPassword());
+            }
+            else {
+                self::$fails = self::VERIFICATION_FAIL;
+            }
+        } else {
             self::$fails = self::VERIFICATION_FAIL;
         }
     }
