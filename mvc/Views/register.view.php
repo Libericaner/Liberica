@@ -5,7 +5,7 @@
  * Time: 13:47
  */
 
-if (isset($_SESSION['u']))
+if (isset($_SESSION[USER]))
 {
     header('Location: ./?view=hidden');
     exit;

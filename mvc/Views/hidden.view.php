@@ -5,7 +5,7 @@
  * Time: 11:19
  */
 
-if (!isset($_SESSION['u']))
+if (!isset($_SESSION[USER]))
 {
     header('Location: ./?view=home');
     exit;
