@@ -15,8 +15,10 @@ class Gallery extends Model {
     const GET_GALLERY_BY_USER_EMAIL = "SELECT G.name, G.description, G.id, U.email FROM gallery AS G INNER JOIN user_gallery AS UG on G.id = UG.gallery_id INNER JOIN user AS U ON UG.gallery_id = U.id AND WHERE U.email = :email;";
     const GET_GALLERY_BY_USER_ID = "SELECT G.name, G.description, G.id, U.email FROM gallery AS G INNER JOIN user_gallery AS UG on G.id = UG.gallery_id INNER JOIN user AS U ON UG.gallery_id = U.id AND WHERE U.id = :uid;";
     const GET_X_GALLERIES        = "SELECT G.id, G.name, G.description FROM gallery ORDER BY G.id DESC LIMIT :num;";
+    const GET_LAST_INSERTED_GALLERY_FOR_CONSTRAINT = "SELECT id FROM gallery ORDER BY id DESC LIMIT 1";
     
-    const ADD_NEW_GALLERY = "INSERT INTO gallery (name) VALUES (:galleryName)";
+    const ADD_NEW_GALLERY = "INSERT INTO gallery (name, description) VALUES (:galleryName, :galleryDescription)";
+    const ADD_USER_CONSTRAINT = "INSERT INTO user_gallery (user_id, gallery_id) VAlUES (:uid, :gid)";
     
     const UPDATE_GALLERY_NAME = "UPDATE gallery SET name = :galleryName";
     const UPDATE_GALLERY_DESCRIPTION = "UPDATE gallery SET description = :galleryDescription";
@@ -33,10 +35,13 @@ class Gallery extends Model {
         $this->description = $description;
     }
     
-    public function addGallery(String $name, String $description) {
+    public function addGallery(Integer $userId, String $name, String $description) {
         
         self::setQueryParameter(array('galleryName' => $name, 'galleryDescription' => $description));
-        return self::modelInsert(self::ADD_NEW_GALLERY_STATEMENT);
+        self::modelInsert(self::ADD_NEW_GALLERY_STATEMENT);
+        $newGalleryId = self::modelSelect(self::GET_LAST_INSERTED_GALLERY_FOR_CONSTRAINT_STATEMENT);
+        self::setQueryParameter(array('uid' => $userId, 'gid' => $newGalleryId));
+        self::modelInsert(self::ADD_USER_CONSTRAINT_STATEMENT);
     }
     
     public function getGalleryById(Integer $id) {
@@ -90,6 +95,7 @@ class Gallery extends Model {
     const GET_GALLERY_BY_USER_EMAIL_STATEMENT = 2;
     const GET_GALLERY_BY_USER_ID_STATEMENT = 3;
     const GET_X_GALLERIES_STATEMENT = 4;
+    const GET_LAST_INSERTED_GALLERY_FOR_CONSTRAINT_STATEMENT = 5;
     
     private static function modelSelect(Integer $whichSelectStatement) {
         $g = new Gallery();
@@ -110,6 +116,10 @@ class Gallery extends Model {
                 $result = self::$database->performQuery($g, self::GET_X_GALLERIES);
     
                 return self::resultGalleryArray($result);
+            case self::GET_LAST_INSERTED_GALLERY_FOR_CONSTRAINT_STATEMENT:
+                $result = self::$database->performQuery($g, self::GET_LAST_INSERTED_GALLERY_FOR_CONSTRAINT);
+                
+                return $result[0]['id'];
             default:
                 $_GET['Fail'] = self::QUERY_FAIL;
                 break;
@@ -131,12 +141,15 @@ class Gallery extends Model {
     }
     
     const ADD_NEW_GALLERY_STATEMENT = 1;
+    const ADD_USER_CONSTRAINT_STATEMENT = 2;
     
     private static function modelInsert(Integer $whichInsertStatement) {
         $g = new Gallery();
         switch ($whichInsertStatement) {
             case self::ADD_NEW_GALLERY_STATEMENT:
                 return self::$database->performQuery($g, self::GET_GALLERY_BY_ID);
+            case self::ADD_USER_CONSTRAINT_STATEMENT:
+                return self::$database->performQuery($g, self::GET_LAST_INSERTED_GALLERY_FOR_CONSTRAINT);
             default:
                 $_GET['Fail'] = self::QUERY_FAIL;
                 break;

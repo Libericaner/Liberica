@@ -15,6 +15,9 @@ class Picture extends Model {
     private $picture_ploc;
     private $thumbnail_ploc;
     
+    private $picture;
+    private $thumbnail;
+    
     private $galleryId;
     
     //TODO : create query-pattern
@@ -25,6 +28,11 @@ class Picture extends Model {
     
     const ADD_PICTURE = "INSERT INTO pic (tag, title, picture_blob, thumbnail_blob) VALUES (:tag, :title, :picture_blob, :thumbnail_blob);";
     const ADD_GALLERY_CONSTRAINT = "INSERT INTO gallery_pic (gallery_id, pic_id) VALUES (:galleryId, :picId)";
+    
+    const UPDATE_TAG = "UPDATE gallery SET tag = :tag WHERE id = :id;";
+    const UPDATE_TITLE = "UPDATE gallery SET title = :title WHERE id = :id;";
+    
+    const DELETE_GALLERY_BY_ID = "DELETE FROM gallery WHERE id = :id";
     
     public function __construct($galleryId = null, $id = null, $tag = null, $title = null, $pictureUnconverted = null, $thumbnailUnconverted = null) {
         $this->galleryId = $galleryId;
@@ -44,9 +52,21 @@ class Picture extends Model {
         self::modelInsert(self::ADD_GALLERY_CONSTRAINT_STATEMENT);
     }
     
-    public function updatePicture() {
+    public function updatePicture($id, $tag = null, $title = null) {
         
+        $updated = false;
         
+        if (isset($tag)) {
+            self::setQueryParameter(array('id' => $id, 'tag' => $tag));
+            self::modelUpdate(UPDATE_TAG_STATEMENT);
+            $updated = true;
+        }
+        if (isset($title)) {
+            self::setQueryParameter(array('id' => $id, 'title' => $title));
+            self::modelUpdate(UPDATE_TITLE_STATEMENT);
+            $updated = true;
+        }
+        return $updated;
     }
     
     public function getPictureById(Integer $id) {
@@ -67,12 +87,12 @@ class Picture extends Model {
         self::modelSelect(self::GET_X_PICTURES_BLOB_STATEMENT);
     }
     
-    private function picToBlob($pic) {
-        
+    public function picToBlob($pic) {
+        //should return the pic as blob
     }
     
-    private function blobToPic($blob) {
-        
+    public function blobToPic($blob) {
+        //should return the blob as pic
     }
     
     const GET_PICTURES_BLOB_BY_ID_STATEMENT = 1;
@@ -96,18 +116,137 @@ class Picture extends Model {
         }
     }
     
+    private function resultToPicturesArray($result) {
+        $pics = array();
+        foreach ($result as $pic) {
+            $p = new Picture();
+            
+            $p.setPicture(p.blobToPic($pic['picture_blob']));
+            $p.setThumbnail(p.blobToPic($pic['thumbnail_blob']));
+            $p.setTag($pic['tag']);
+            $p.setTitle($pic['title']);
+            $p.setId($pic['id']);
+            
+            $pics[] = $p;
+        }
+    }
+    
     const ADD_PICTURE_STATEMENT = 1;
     const ADD_GALLERY_CONSTRAINT_STATEMENT = 2;
     
     private function modelInsert(Integer $whichInsertStatement) {
-        // TODO: Implement modelInsert() method.
+        $p = new Picture();
+        switch ($whichInsertStatement) {
+            case self::ADD_PICTURE_STATEMENT:
+                self::$database->performQuery($p, self::ADD_PICTURE);
+                
+                return true;
+            case self::ADD_GALLERY_CONSTRAINT_STATEMENT:
+                self::$database->performQuery($p, self::ADD_GALLERY_CONSTRAINT);
+    
+                return true;
+            default:
+                return false;
+        }
     }
+    
+    const UPDATE_TAG_STATEMENT = 1;
+    const UPDATE_TITLE_STATEMENT = 2;
     
     private function modelUpdate(Integer $whichUpdateStatement) {
-        // TODO: Implement modelUpdate() method.
+        $p = new Picture();
+        switch($whichUpdateStatement) {
+            case self::UPDATE_TAG_STATEMENT:
+                self::$database->performQuery($p, self::UPDATE_TAG);
+                return true;
+            case self::UPDATE_TITLE_STATEMENT:
+                self::$database->performQuery($p, self::UPDATE_TITLE);
+                return true;
+            default:
+                return false;
+        }
     }
     
+    const DELETE_GALLERY_BY_ID_STATEMENT = 1;
+    
     private function modelDelete(Integer $whichDeleteStatement) {
-        // TODO: Implement modelDelete() method.
+        $p = new Picture();
+        switch ($whichDeleteStatement) {
+            case self::DELETE_GALLERY_BY_ID_STATEMENT:
+                self::$database->performQuery($p, self::DELETE_GALLERY_BY_ID);
+                return true;
+            default:
+                return false;
+        }
+    }
+    
+    public function getId() {
+        
+        return $this->id;
+    }
+    
+    public function setId($id) {
+        
+        $this->id = $id;
+    }
+    
+    public function getTag() {
+        
+        return $this->tag;
+    }
+    
+    public function setTag($tag) {
+        
+        $this->tag = $tag;
+    }
+    
+    public function getTitle() {
+        
+        return $this->title;
+    }
+    
+    public function setTitle($title) {
+        
+        $this->title = $title;
+    }
+    
+    public function getPictureBlob() : void {
+        
+        return $this->picture_blob;
+    }
+    
+    public function setPictureBlob(void $picture_blob) {
+        
+        $this->picture_blob = $picture_blob;
+    }
+    
+    public function getThumbnailBlob() : void {
+        
+        return $this->thumbnail_blob;
+    }
+    
+    public function setThumbnailBlob(void $thumbnail_blob) {
+        
+        $this->thumbnail_blob = $thumbnail_blob;
+    }
+    
+    public function getPicture() {
+        
+        return $this->picture;
+    }
+    
+    public function setPicture($picture) {
+        
+        $this->picture = $picture;
+    }
+    
+    public function getThumbnail() {
+        
+        return $this->thumbnail;
+    }
+    
+    public function setThumbnail($thumbnail) {
+        
+        $this->thumbnail = $thumbnail;
     }
 }
