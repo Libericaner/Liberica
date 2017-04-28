@@ -14,14 +14,14 @@ class Gallery extends Model {
     const GET_GALLERY_BY_ID = "SELECT name, description FROM gallery WHERE id = :idGallery";
     const GET_GALLERY_BY_USER_EMAIL = "SELECT G.name, G.description, G.id, U.email FROM gallery AS G INNER JOIN user_gallery AS UG on G.id = UG.gallery_id INNER JOIN user AS U ON UG.gallery_id = U.id AND WHERE U.email = :email;";
     const GET_GALLERY_BY_USER_ID = "SELECT G.name, G.description, G.id, U.email FROM gallery AS G INNER JOIN user_gallery AS UG on G.id = UG.gallery_id INNER JOIN user AS U ON UG.gallery_id = U.id AND WHERE U.id = :uid;";
-    const GET_X_GALLERIES = "SELECT G.id, G.name, G.description FROM gallery ORDER BY G.id DESC LIMIT :num;";
+    const GET_X_GALLERIES        = "SELECT G.id, G.name, G.description FROM gallery ORDER BY G.id DESC LIMIT :num;";
     
     const ADD_NEW_GALLERY = "INSERT INTO gallery (name) VALUES (:galleryName)";
     
     const UPDATE_GALLERY_NAME = "UPDATE gallery SET name = :galleryName";
     const UPDATE_GALLERY_DESCRIPTION = "UPDATE gallery SET description = :galleryDescription";
     
-    const DELET_GALLERY_NAME = "DELETE FROM gallery WHERE id = :id";
+    const DELETE_GALLERY_NAME    = "DELETE FROM gallery WHERE id = :id";
     
     //FAILS
     const QUERY_FAIL = "We could not find this query";
@@ -169,7 +169,7 @@ class Gallery extends Model {
         $g = new Gallery();
         switch ($whichDeleteStatement) {
             case self::DELETE_GALLERY_BY_ID_STATEMENT:
-                self::$database->performQuery($g, self::DELET_GALLERY_NAME);
+                self::$database->performQuery($g, self::DELETE_GALLERY_NAME);
                 break;
             default:
                 $_GET['Fail'] = self::QUERY_FAIL;
