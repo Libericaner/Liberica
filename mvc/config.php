@@ -9,3 +9,5 @@ define("DEFAULT_PAGE", "login");
 define("ERROR_PAGE", "404");
 
 define("CSS_PATH", "main.css");
+
+define("USER", "user");

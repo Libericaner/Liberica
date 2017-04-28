@@ -24,7 +24,7 @@ function printHead($title = 'PHP-MVC by DJM') {
 
 function printMenu() {
     
-    $whenUserIsSet = isset($_SESSION['u']);
+    $whenUserIsSet = isset($_SESSION[USER]);
     
     ?>
     

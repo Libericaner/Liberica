@@ -18,7 +18,7 @@ function Xlogin() {
     
     if (isset($_POST['username'], $_POST['password']) && !empty($_POST['username']) && !empty($_POST['password'])) {
         if (User::verifyUser($_POST['username'], $_POST['password'])) {
-            $_SESSION['u'] = $_POST['username'];
+            $_SESSION[USER] = $_POST['username'];
             header("Location: ./?view=hidden");
             exit;
         }
@@ -35,7 +35,7 @@ function Xregister() {
         if (User::addUser($_POST['user'], $_POST['password']))
         {
             if (User::verifyUser($_POST['user'], $_POST['password'])) {
-                $_SESSION['u'] = $_POST['user'];
+                $_SESSION[USER] = $_POST['user'];
                 header("Location: ./?view=hidden");
                 exit;
             }
