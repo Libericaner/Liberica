@@ -5,7 +5,13 @@
  * Time: 13:40
  */
 
-session_destroy();
+if ($_SESSION[TOKEN] == $_GET['t'])
+{
+    session_destroy();
+    header('Location: ./?view=login');
+    exit;
+}
+
 
 header('Location: ./?view=login');
 exit;
