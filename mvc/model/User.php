@@ -7,6 +7,8 @@
  */
 class User extends Model {
     
+    // TODO: RESOLVE issues with properties: $id, getIdUser, $idUser, $username, etc!
+    
     private $id;
     private $email;
     private $password;
@@ -49,6 +51,7 @@ class User extends Model {
         }
         else {
             self::$fails = self::VERIFICATION_FAIL;
+            return FALSE;
         }
     }
     
@@ -105,7 +108,7 @@ class User extends Model {
     
     public static function getFail() {
         
-        return self::fails;
+        return self::$fails;
     }
     
     //SELECT

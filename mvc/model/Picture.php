@@ -12,8 +12,8 @@ class Picture extends Model {
     private $title;
     private $picture_blob;
     private $thumbnail_blob;
-    private $picture_ploc;
-    private $thumbnail_ploc;
+    private $picture_ploc; // What is ploc?
+    private $thumbnail_ploc; // Same
     
     private $picture;
     private $thumbnail;
@@ -43,6 +43,7 @@ class Picture extends Model {
         $this->thumbnail_blob = $this->picToBlob($thumbnailUnconverted);
     }
     
+    // Static?
     public function addPicture($galleryId, $tag, $title, $pictureUnconverted, $thumbnailUnconverted) {
         
         self::setQueryParameter(array('tag'=>$tag,'title'=>$title,'picture_blob'=>$this->picToBlob($pictureUnconverted),'thumbnail_blob'=>$this->picToBlob($thumbnailUnconverted)));
@@ -58,39 +59,47 @@ class Picture extends Model {
         
         if (isset($tag)) {
             self::setQueryParameter(array('id' => $id, 'tag' => $tag));
-            self::modelUpdate(UPDATE_TAG_STATEMENT);
+            self::modelUpdate(self::UPDATE_TAG_STATEMENT);
             $updated = true;
+            // TODO: Don't set $updated always to true - this info doesn't help anybody
+            // Because you should know if $tag is null or not
         }
         if (isset($title)) {
             self::setQueryParameter(array('id' => $id, 'title' => $title));
-            self::modelUpdate(UPDATE_TITLE_STATEMENT);
+            self::modelUpdate(self::UPDATE_TITLE_STATEMENT);
             $updated = true;
         }
         return $updated;
     }
     
+    // Static!
     public function getPictureById(Integer $id) {
         
         self::setQueryParameter(array('id' => $id));
         return self::modelSelect(self::GET_PICTURES_BLOB_BY_GALLERY_ID_STATEMENT);
     }
     
+    // Static and consider moving to gallery class
     public function getPicturesFromGallery(Integer $idGallery) {
         
         self::setQueryParameter(array('idGallery' => $idGallery));
         return self::modelSelect(self::GET_PICTURES_BLOB_BY_GALLERY_ID_STATEMENT);
     }
     
+    // Static!
+    // Of all? Or from a specific user? The parameter represents what?
     public function getNumberOfPictures(Integer $number) {
         
         self::setQueryParameter(array('num' => $number));
         self::modelSelect(self::GET_X_PICTURES_BLOB_STATEMENT);
     }
     
+    // Static!
     public function picToBlob($pic) {
         //should return the pic as blob
     }
     
+    // Static
     public function blobToPic($blob) {
         //should return the blob as pic
     }
@@ -116,16 +125,17 @@ class Picture extends Model {
         }
     }
     
+    // ?
     private function resultToPicturesArray($result) {
         $pics = array();
         foreach ($result as $pic) {
             $p = new Picture();
             
-            $p.setPicture(p.blobToPic($pic['picture_blob']));
-            $p.setThumbnail(p.blobToPic($pic['thumbnail_blob']));
-            $p.setTag($pic['tag']);
-            $p.setTitle($pic['title']);
-            $p.setId($pic['id']);
+            $p->setPicture($p->blobToPic($pic['picture_blob']));
+            $p->setThumbnail($p->blobToPic($pic['thumbnail_blob']));
+            $p->setTag($pic['tag']);
+            $p->setTitle($pic['title']);
+            $p->setId($pic['id']);
             
             $pics[] = $p;
         }
@@ -210,7 +220,7 @@ class Picture extends Model {
         $this->title = $title;
     }
     
-    public function getPictureBlob() : void {
+    public function getPictureBlob() {
         
         return $this->picture_blob;
     }
@@ -220,7 +230,7 @@ class Picture extends Model {
         $this->picture_blob = $picture_blob;
     }
     
-    public function getThumbnailBlob() : void {
+    public function getThumbnailBlob() {
         
         return $this->thumbnail_blob;
     }

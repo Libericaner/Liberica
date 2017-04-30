@@ -35,6 +35,7 @@ class Gallery extends Model {
         $this->description = $description;
     }
     
+    // Static?
     public function addGallery(Integer $userId, String $name, String $description) {
         
         self::setQueryParameter(array('galleryName' => $name, 'galleryDescription' => $description));
@@ -44,30 +45,36 @@ class Gallery extends Model {
         self::modelInsert(self::ADD_USER_CONSTRAINT_STATEMENT);
     }
     
+    // Static!
     public function getGalleryById(Integer $id) {
         
         self::setQueryParameter(array('idGallery' => $id));
         return self::modelSelect(self::GET_GALLERY_BY_ID_STATEMENT);
     }
     
+    // Static!
     public function getGalleriesByUserEmail(String $email) {
         
         self::setQueryParameter(array('email' => $email));
         return self::modelSelect(self::GET_GALLERY_BY_USER_EMAIL_STATEMENT);
     }
     
+    // Static!
     public function getGalleriesByUserId(Integer $id) {
         
         self::setQueryParameter(array('id' => $id));
-        return modelSelect(self::GET_GALLERY_BY_USER_ID_STATEMENT);
+        return self::modelSelect(self::GET_GALLERY_BY_USER_ID_STATEMENT);
     }
     
+    // Static!
+    // Of all? Or from a specific user? The parameter represents what?
     public function getNumberOfGalleries(Integer $number) {
         
         self::setQueryParameter(array('num' => $number));
         return self::modelSelect(self::GET_X_GALLERIES_STATEMENT);
     }
     
+    // Static or just deleteGallery
     public function deleteGalleryById(Integer $id) {
         
         self::setQueryParameter(array('id' => $id));
@@ -122,19 +129,25 @@ class Gallery extends Model {
                 return $result[0]['id'];
             default:
                 $_GET['Fail'] = self::QUERY_FAIL;
-                break;
+                return null;
         }
     }
     
+    // What is resultGalleryArray??
     private static function resultGalleryArray($result) {
         $arrGalleries = array();
     
         foreach ($result as $gallery) {
             $gal = new Gallery();
-            $gal.setId($gallery['id']);
-            $gal.setName($gallery['name']);
-            $gal.setDescription($gallery['description']);
-            $arrGalleries = array();
+            $gal->setId($gallery['id']);
+            $gal->setName($gallery['name']);
+            $gal->setDescription($gallery['description']);
+            
+            // This resets $arrGelleries to an empty array:
+            // $arrGalleries = array();
+            
+            // I think we should add the current gallery to the array:
+            $arrGalleries[] = $gal;
         }
         
         return $arrGalleries;
