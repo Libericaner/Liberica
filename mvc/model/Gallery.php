@@ -104,7 +104,7 @@ class Gallery extends Model {
     const GET_X_GALLERIES_STATEMENT = 4;
     const GET_LAST_INSERTED_GALLERY_FOR_CONSTRAINT_STATEMENT = 5;
     
-    private static function modelSelect(Integer $whichSelectStatement) {
+    private static function modelSelect($whichSelectStatement) {
         $g = new Gallery();
         switch ($whichSelectStatement) {
             case self::GET_GALLERY_BY_ID_STATEMENT:

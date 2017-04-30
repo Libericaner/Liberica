@@ -225,7 +225,7 @@ class Picture extends Model {
         return $this->picture_blob;
     }
     
-    public function setPictureBlob(void $picture_blob) {
+    public function setPictureBlob($picture_blob) {
         
         $this->picture_blob = $picture_blob;
     }
@@ -235,7 +235,7 @@ class Picture extends Model {
         return $this->thumbnail_blob;
     }
     
-    public function setThumbnailBlob(void $thumbnail_blob) {
+    public function setThumbnailBlob($thumbnail_blob) {
         
         $this->thumbnail_blob = $thumbnail_blob;
     }
