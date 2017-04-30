@@ -7,8 +7,16 @@
 
 $g = new Gallery();
 
-print "Meine Gallerien:<br>\n";
-var_dump($g->getGalleriesByUserEmail($_SESSION[USER]));
+print "<h3 style='padding-left: 10px'>Meine Gallerien:</h3><p>";
+
+$all = $g->getGalleriesByUserEmail($_SESSION[USER]);
+print "<table><tr><th>Titel</th><th>Beschreibung</th><th>Löschen</th></tr>";
+foreach ($all as $item)
+{
+    print "<tr><td>".$item->getName()."</td><td>".$item->getDescription() . "</td><td><a href='./?view=model&cmd=delete&id=".$item->getId()."'>❌</a></td></tr>";
+}
+
+print "</table>";
 
 ?>
 <hr>
@@ -17,5 +25,5 @@ var_dump($g->getGalleriesByUserEmail($_SESSION[USER]));
         <input type="text" name="name">
     <p>Beschreibung:
         <input type="text" name="description">
-    <p><input type="submit" name="sub[createGallery]" value="Erstellen"></p>
+    <p><input type="submit" name="sub[createGallery]" value="Gallerie erstellen"></p>
 </form>
