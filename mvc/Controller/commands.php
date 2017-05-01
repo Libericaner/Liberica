@@ -47,3 +47,16 @@ function Xregister() {
     }
     return 'Fülle alle Felder aus';
 }
+
+function XcreateGallery()
+{
+    if (isset($_POST['name'], $_POST['description']))
+    {
+        $u = User::getUserByEmail($_SESSION[USER]);
+        
+        $g = new Gallery();
+        $g->addGallery(intval($u->getIdUser()), $_POST['name'], $_POST['description']);
+        header("Location: ./?view=model");
+    }
+    return "Angaben sind nicht komplett";
+}
