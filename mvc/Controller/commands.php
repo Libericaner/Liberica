@@ -60,3 +60,24 @@ function XcreateGallery()
     }
     return "Angaben sind nicht komplett";
 }
+
+function XuploadImage(){
+    if (isset($_POST['title'], $_POST['tags'], $_POST['picture'], $_POST['galleryid']))
+    {
+        //$galleryId, $tag, $title, $pictureUnconverted, $thumbnailUnconverted
+        
+        $p = new Picture();
+    
+        $allowed_extensions = array('png', 'jpg', 'jpeg');
+        if(!in_array($_POST['picture'], $allowed_extensions))
+        {
+            if (filesize($_POST[picture]) < 4000000) {
+                $p->addPicture($_POST['galleryid'], $_POST['tags'], $_POST['title'], $_POST['picture'], $_POST['picture']);
+                header("Location: ");
+            }
+            return 'Das Bild ist zu gross';
+        }
+        return 'Die Datei ist kein gültiges Format(JPG, PNG, JPEG)';
+    }
+}
+
