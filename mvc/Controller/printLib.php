@@ -25,7 +25,6 @@ function printHead($title = 'PHP-MVC by DJM') {
 function printMenu() {
     
     $whenUserIsSet = isset($_SESSION[USER]);
-    
     ?>
     
     <nav>
@@ -33,7 +32,7 @@ function printMenu() {
             <?=menuItem('login', 'Login', !$whenUserIsSet)?>
             <?=menuItem('register', 'Registrieren', !$whenUserIsSet)?>
             <?=menuItem('hidden', 'Übersicht', $whenUserIsSet)?>
-            <?=menuItem('logout', 'Logout', $whenUserIsSet)?>
+            <?=menuItem('logout'.($whenUserIsSet?'&t='.$_SESSION[TOKEN]:''), 'Logout', $whenUserIsSet)?>
         </ul>
         <hr>
     </nav>
