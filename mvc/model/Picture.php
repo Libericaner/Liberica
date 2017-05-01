@@ -20,7 +20,6 @@ class Picture extends Model {
     
     private $galleryId;
     
-    //TODO : create query-pattern
     const GET_PICTURE_BLOB_BY_ID = "SELECT id, tag, title, picture_blob, thumbnail_blob FROM pic WHERE id = :id;";
     const GET_PICTURES_BLOB_BY_GALLERY_ID = "SELECT P.id, P.tag, P.title, P.picture_blob, P.thumbnail_blob FROM pic AS P INNER JOIN gallery_pic AS GP ON P.id = GP.pic_id INNER JOIN gallery AS G ON G.id = GP.gallery_id WHERE G.id = :idGallery;";
     const GET_X_PICTURES_BLOB = "SELECT id, tag, title, picture_blob, picture_thumbnail FROM pic ORDER BY id DESC LIMIT :num;";
@@ -43,17 +42,16 @@ class Picture extends Model {
         $this->thumbnail_blob = $this->picToBlob($thumbnailUnconverted);
     }
     
-    // Static?
-    public function addPicture($galleryId, $tag, $title, $pictureUnconverted, $thumbnailUnconverted) {
+    public static function addPicture($galleryId, $tag, $title, $pictureUnconverted, $thumbnailUnconverted) {
         
-        self::setQueryParameter(array('tag'=>$tag,'title'=>$title,'picture_blob'=>$this->picToBlob($pictureUnconverted),'thumbnail_blob'=>$this->picToBlob($thumbnailUnconverted)));
+        self::setQueryParameter(array('tag'=>$tag,'title'=>$title,'picture_blob'=>self::picToBlob($pictureUnconverted),'thumbnail_blob'=>self::picToBlob($thumbnailUnconverted)));
         self::modelInsert(self::ADD_PICTURE_STATEMENT);
         $newPicId = self::modelSelect(self::GET_LAST_CREATED_PICTURE_ID_FOR_GALLERY_CONSTRAINT_STATEMENT);
         self::setQueryParameter(array('galleryId' => $galleryId, 'picId' => $newPicId));
         self::modelInsert(self::ADD_GALLERY_CONSTRAINT_STATEMENT);
     }
     
-    public function updatePicture($id, $tag = null, $title = null) {
+    public static function updatePicture($id, $tag = null, $title = null) {
         
         $updated = false;
         
@@ -72,35 +70,30 @@ class Picture extends Model {
         return $updated;
     }
     
-    // Static!
-    public function getPictureById(Integer $id) {
+    public static function getPictureById(Integer $id) {
         
         self::setQueryParameter(array('id' => $id));
         return self::modelSelect(self::GET_PICTURES_BLOB_BY_GALLERY_ID_STATEMENT);
     }
     
-    // Static and consider moving to gallery class
-    public function getPicturesFromGallery(Integer $idGallery) {
+    public static function getPicturesFromGallery(Integer $idGallery) {
         
         self::setQueryParameter(array('idGallery' => $idGallery));
         return self::modelSelect(self::GET_PICTURES_BLOB_BY_GALLERY_ID_STATEMENT);
     }
     
-    // Static!
-    // Of all? Or from a specific user? The parameter represents what?
-    public function getNumberOfPictures(Integer $number) {
+    public static function getNumberOfPictures(Integer $number) {
         
         self::setQueryParameter(array('num' => $number));
         self::modelSelect(self::GET_X_PICTURES_BLOB_STATEMENT);
     }
     
-    // Static!
-    public function picToBlob($pic) {
+    public static function picToBlob($pic) {
         //should return the pic as blob
     }
     
     // Static
-    public function blobToPic($blob) {
+    public static function blobToPic($blob) {
         //should return the blob as pic
     }
     
@@ -109,8 +102,7 @@ class Picture extends Model {
     const GET_X_PICTURES_BLOB_STATEMENT = 3;
     const GET_LAST_CREATED_PICTURE_ID_FOR_GALLERY_CONSTRAINT_STATEMENT = 4;
     
-    private function modelSelect(Integer $whichSelectStatement) {
-        $p = new Picture();
+    private function modelSelect($whichSelectStatement) {
         switch($whichSelectStatement) {
             case self::GET_PICTURES_BLOB_BY_ID_STATEMENT:
                 return;
@@ -144,15 +136,14 @@ class Picture extends Model {
     const ADD_PICTURE_STATEMENT = 1;
     const ADD_GALLERY_CONSTRAINT_STATEMENT = 2;
     
-    private function modelInsert(Integer $whichInsertStatement) {
-        $p = new Picture();
+    private function modelInsert($whichInsertStatement) {
         switch ($whichInsertStatement) {
             case self::ADD_PICTURE_STATEMENT:
-                self::$database->performQuery($p, self::ADD_PICTURE);
+                self::$database->performQuery(self::ADD_PICTURE);
                 
                 return true;
             case self::ADD_GALLERY_CONSTRAINT_STATEMENT:
-                self::$database->performQuery($p, self::ADD_GALLERY_CONSTRAINT);
+                self::$database->performQuery(self::ADD_GALLERY_CONSTRAINT);
     
                 return true;
             default:
@@ -163,14 +154,13 @@ class Picture extends Model {
     const UPDATE_TAG_STATEMENT = 1;
     const UPDATE_TITLE_STATEMENT = 2;
     
-    private function modelUpdate(Integer $whichUpdateStatement) {
-        $p = new Picture();
+    private function modelUpdate($whichUpdateStatement) {
         switch($whichUpdateStatement) {
             case self::UPDATE_TAG_STATEMENT:
-                self::$database->performQuery($p, self::UPDATE_TAG);
+                self::$database->performQuery(self::UPDATE_TAG);
                 return true;
             case self::UPDATE_TITLE_STATEMENT:
-                self::$database->performQuery($p, self::UPDATE_TITLE);
+                self::$database->performQuery(self::UPDATE_TITLE);
                 return true;
             default:
                 return false;
@@ -179,11 +169,10 @@ class Picture extends Model {
     
     const DELETE_GALLERY_BY_ID_STATEMENT = 1;
     
-    private function modelDelete(Integer $whichDeleteStatement) {
-        $p = new Picture();
+    private function modelDelete($whichDeleteStatement) {
         switch ($whichDeleteStatement) {
             case self::DELETE_GALLERY_BY_ID_STATEMENT:
-                self::$database->performQuery($p, self::DELETE_GALLERY_BY_ID);
+                self::$database->performQuery(self::DELETE_GALLERY_BY_ID);
                 return true;
             default:
                 return false;
