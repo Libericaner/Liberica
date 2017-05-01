@@ -7,7 +7,9 @@
 include_once "mvc/Database/Database.php";
 
 require_once "mvc/Model/User.php";
+require_once "mvc/Model/Gallery.php";
+require_once "mvc/Model/Picture.php";
 
 //TODO : Parameter anpassen
-$database = new Database("localhost", "root", "gibbiX12345", "m151");
-User::setDatabase($database);
+$database = new Database("localhost", "root", "password", "m151");
+Model::setDatabase($database);

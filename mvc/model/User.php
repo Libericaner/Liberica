@@ -10,8 +10,6 @@ require_once "mvc/Model/Model.php";
 
 class User extends Model {
     
-    // TODO: RESOLVE issues with properties: $id, getIdUser, $idUser, $username, etc!
-    
     private $id;
     private $email;
     private $password;
@@ -19,7 +17,7 @@ class User extends Model {
     private $name;
     
     //TODO : create query-pattern
-    const GET_USER_BY_NAME = "SELECT email FROM user WHERE email = :email LIMIT 1;";
+    const GET_USER_BY_NAME = "SELECT id, email FROM user WHERE email = :email LIMIT 1;";
     const GET_USER_BY_ID   = "SELECT email FROM user WHERE id = :id;";
     const ADD_USER         = "INSERT INTO user (email, password) VALUES (:email, :password);";
     
@@ -40,7 +38,7 @@ class User extends Model {
     //You can initialize a user with the option to offer the PDO-object at initialization
     public function __construct($id = NULL, $email = NULL, $password = NULL) {
         
-        $this->idUser = $id;
+        $this->id = $id;
         $this->email = $email;
         $this->password = $password;
     }
@@ -125,24 +123,26 @@ class User extends Model {
     
     private static function modelSelect($whichSelectStatement) {
         
-        $u = new User();
         switch ($whichSelectStatement) {
             case self::SELECT_USER_BY_NAME_STATEMENT: //SELECT user by his name
-                $result = self::$database->performQuery($u, self::GET_USER_BY_NAME);
+                $result = self::$database->performQuery(self::GET_USER_BY_NAME);
                 
                 if (count($result) == 0)
                 {
-                    return new User();
+                    return null; // changed from new User to null
                 }
-                return new User(NULL, $result[0]['email']);
+                return new User($result[0]['id'], $result[0]['email']);
+                
             case self::SELECT_PASSWORD_HASH_STATEMENT: //Get password hash by username for verification
-                $result = self::$database->performQuery($u, self::GET_PASSWORD_HASH);
+                $result = self::$database->performQuery(self::GET_PASSWORD_HASH);
     
                 return new User(NULL, NULL, $result[0]['password']);
+                
             case self::SELECT_USER_BY_ID_STATEMENT:
-                $result = self::$database->performQuery($u, self::GET_USER_BY_ID);
+                $result = self::$database->performQuery(self::GET_USER_BY_ID);
     
                 return new User(NULL, $result[0]['email']);
+                
             default:
                 self::$fails = self::QUERY_FAIL;
                 break;
@@ -154,10 +154,9 @@ class User extends Model {
     
     private static function modelInsert($whichInsertStatement) {
         
-        $u = new User();
         switch ($whichInsertStatement) {
             case self::ADD_USER_STATEMENT:
-                self::$database->performQuery($u, self::ADD_USER);
+                self::$database->performQuery(self::ADD_USER);
                 break;
             default:
                 self::$fails = self::QUERY_FAIL;
@@ -173,19 +172,18 @@ class User extends Model {
     
     private static function modelUpdate($whichUpdateStatement) {
         
-        $u = new User();
         switch ($whichUpdateStatement) {
             case self::UPDATE_USERNAME_STATEMENT:
-                self::$database->performQuery($u, self::UPDATE_USERNAME);
+                self::$database->performQuery(self::UPDATE_USERNAME);
                 break;
             case self::UPDATE_PASSWORD_STATEMENT:
-                self::$database->performQuery($u, self::UPDATE_PASSWORD);
+                self::$database->performQuery(self::UPDATE_PASSWORD);
                 break;
             case self::UPDATE_PRENAME_STATEMENT:
-                self::$database->performQuery($u, self::UPDATE_PRENAME);
+                self::$database->performQuery(self::UPDATE_PRENAME);
                 break;
             case self::UPDATE_NAME_STATEMENT:
-                self::$database->performQuery($u, self::UPDATE_NAME);
+                self::$database->performQuery(self::UPDATE_NAME);
                 break;
             default:
                 self::$fails = self::QUERY_FAIL;
@@ -198,10 +196,9 @@ class User extends Model {
     
     private static function modelDelete($whichDeleteStatement) {
         
-        $u = new User();
         switch ($whichDeleteStatement) {
             case self::DELETE_USER_BY_ID_STATEMENT:
-                self::$database->performQuery($u, self::DELETE_USER_BY_ID);
+                self::$database->performQuery(self::DELETE_USER_BY_ID);
                 break;
             default:
                 self::$fails = self::QUERY_FAIL;

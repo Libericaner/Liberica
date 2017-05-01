@@ -19,6 +19,8 @@ function Xlogin() {
     if (isset($_POST['username'], $_POST['password']) && !empty($_POST['username']) && !empty($_POST['password'])) {
         if (User::verifyUser($_POST['username'], $_POST['password'])) {
             $_SESSION[USER] = $_POST['username'];
+            $_SESSION[TOKEN] = bin2hex(random_bytes(32));
+            $_SESSION['t2'] = bin2hex(openssl_random_pseudo_bytes(32));
             header("Location: ./?view=hidden");
             exit;
         }
@@ -44,4 +46,17 @@ function Xregister() {
         return 'User konnte nicht registriert werden';
     }
     return 'Fülle alle Felder aus';
+}
+
+function XcreateGallery()
+{
+    if (isset($_POST['name'], $_POST['description']))
+    {
+        $u = User::getUserByEmail($_SESSION[USER]);
+        
+        $g = new Gallery();
+        $g->addGallery(intval($u->getIdUser()), $_POST['name'], $_POST['description']);
+        header("Location: ./?view=model");
+    }
+    return "Angaben sind nicht komplett";
 }
