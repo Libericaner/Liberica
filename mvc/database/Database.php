@@ -42,7 +42,7 @@ class Database {
         
         $stmt = $this->connection->prepare($queryPattern);
         
-        $stmt->execute($model->getQueryParameter());
+        $stmt->execute($model::getQueryParameter());
         
         $result = array();
         

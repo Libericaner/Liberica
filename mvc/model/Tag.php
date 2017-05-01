@@ -7,14 +7,75 @@
  */
 class Tag extends Model {
     
-    //TODO : create query-pattern
+    private $id;
+    private $label;
     
-    private function modelSelect(Integer $whichSelectStatement) {
-        // TODO: Implement modelSelect() method.
+    const GET_TAG_BY_ID = "SELECT tag_id, tag_name FROM tag WHERE tag_id = :id";
+    const GET_TAG_BY_NAME = "SELECT tag_id, tag_name FROM tag WHERE tag_name = :name";
+    const GET_ALL = "SELECT * FROM tag";
+    
+    const INSERT_TAG = "INSERT INTO tag (tag_name) VALUES (:name)";
+    
+    public static function create($name)
+    {
+        if (empty($name))
+            return false;
+        
+        if (is_null(self::getTagByName($name)))
+            return false;
+        
+        self::setQueryParameter($name);
+        self::modelInsert(self::INSERT_TAG_STATEMENT);
+        
+        return self::getTagByName($name);
     }
     
-    private function modelInsert(Integer $whichInsertStatement) {
-        // TODO: Implement modelInsert() method.
+    public static function getTagByName($name)
+    {
+        self::setQueryParameter(['name' => $name]);
+        return self::modelSelect(self::GET_TAG_BY_NAME);
+    }
+    
+    public static function getTagById($id)
+    {
+        self::setQueryParameter(['id' => $id]);
+        return self::modelSelect(self::GET_TAG_BY_ID);
+    }
+    
+    public static function getAll()
+    {
+    
+    }
+    
+    const GET_TAG_BY_ID_STATEMENT = 1;
+    const GET_TAG_BY_NAME_STATEMENT = 2;
+    const GET_ALL_STATEMENT = 3;
+    
+    private function modelSelect($whichSelectStatement) {
+        
+        switch ($whichSelectStatement)
+        {
+            case self::GET_TAG_BY_ID_STATEMENT:
+                $result = self::$database->performQuery('Tag', self::GET_TAG_BY_ID);
+                return count($result) == 0 ? null : new Tag($result[0]['tag_id'], $result[0]['tag_name']);
+            case self::GET_TAG_BY_NAME_STATEMENT:
+                $result = self::$database->performQuery('Tag', self::GET_TAG_BY_NAME);
+                return count($result) == 0 ? null : new Tag($result[0]['tag_id'], $result[0]['tag_name']);
+            case self::GET_ALL_STATEMENT:
+                $result = self::$database->performQuery('Tag', self::GET_ALL);
+                return $result;
+        }
+    }
+    
+    const INSERT_TAG_STATEMENT = 1;
+    
+    private function modelInsert($whichInsertStatement) {
+        
+        switch ($whichInsertStatement)
+        {
+            case self::INSERT_TAG_STATEMENT:
+                return self::$database->performQuery('Tag', self::INSERT_TAG);
+        }
     }
     
     private function modelUpdate(Integer $whichUpdateStatement) {
