@@ -12,7 +12,7 @@ abstract class Model {
     protected static $queryParams;
     
     //Get the query parameter -> used from Database
-    public function getQueryParameter() {
+    public static function getQueryParameter() {
     
         return self::$queryParams;
     }
