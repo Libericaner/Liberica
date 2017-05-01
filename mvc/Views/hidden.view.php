@@ -15,4 +15,4 @@ if (!isset($_SESSION[USER]))
 
 <h1>Hidden</h1>
 
-<p>Du bist eingeloggt. Username: <?=$_SESSION['u']?></p>
+<p>Du bist eingeloggt. Username: <?=$_SESSION[USER]?></p>
