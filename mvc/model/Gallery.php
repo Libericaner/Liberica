@@ -199,7 +199,7 @@ class Gallery extends Model {
     
     public function getId() {
         
-        return $this->id;
+        return htmlentities($this->id);
     }
     
     public function setId($id) {
@@ -209,7 +209,7 @@ class Gallery extends Model {
     
     public function getName() {
         
-        return $this->name;
+        return htmlentities($this->name);
     }
     
     public function setName($name) {
@@ -219,7 +219,7 @@ class Gallery extends Model {
     
     public function getDescription() {
         
-        return $this->description;
+        return htmlentities($this->description);
     }
     
     public function setDescription($description) {
