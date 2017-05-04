@@ -70,7 +70,7 @@ function XcreateGallery()
         
         $g = new Gallery();
         $g->addGallery(intval($u->getIdUser()), $_POST['name'], $_POST['description']);
-        header("Location: ./?view=model");
+        header("Location: ");
     }
     return "Angaben sind nicht komplett";
 }

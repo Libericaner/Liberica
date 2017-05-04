@@ -211,7 +211,7 @@ class User extends Model {
         
         self::setQueryParameter(array('email' => $email));
         $user = self::modelSelect(self::SELECT_USER_BY_NAME_STATEMENT);
-        if (!($user->getEmail() == NULL)) {
+        if ($user != NULL && !($user->getEmail() == NULL)) {
             return TRUE;
         }
         else {
