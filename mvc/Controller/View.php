@@ -29,7 +29,7 @@ class View {
     
     public function show($arg) {
         
-        $isLoggedIn = isset($_SESSION['u']);
+        $isLoggedIn = isset($_SESSION[USER]);
         
         printHead();
         

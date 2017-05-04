@@ -12,5 +12,5 @@ require_once "mvc/Model/Picture.php";
 require_once "mvc/Model/Tag.php";
 
 //TODO : Parameter anpassen
-$database = new Database("localhost", "root", "gibbiX12345", "m151");
+$database = new Database(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 Model::setDatabase($database);
