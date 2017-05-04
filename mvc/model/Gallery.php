@@ -13,7 +13,7 @@ class Gallery extends Model {
     
     const GET_GALLERY_BY_ID = "SELECT name, description FROM gallery WHERE id = :idGallery";
     const GET_GALLERY_BY_USER_EMAIL = "SELECT G.name, G.description, G.id, U.email FROM gallery AS G INNER JOIN user_gallery AS UG on G.id = UG.gallery_id INNER JOIN user AS U ON UG.user_id = U.id WHERE U.email = :email;";
-    const GET_GALLERY_BY_USER_ID = "SELECT G.name, G.description, G.id, U.email FROM gallery AS G INNER JOIN user_gallery AS UG on G.id = UG.gallery_id INNER JOIN user AS U ON UG.gallery_id = U.id WHERE U.id = :uid;";
+    const GET_GALLERY_BY_USER_ID = "SELECT G.name, G.description, G.id, U.email FROM gallery AS G JOIN user_gallery AS UG on G.id = UG.gallery_id INNER JOIN user AS U ON UG.user_id = U.id WHERE U.id = :id;";
     const GET_X_GALLERIES        = "SELECT G.id, G.name, G.description FROM gallery ORDER BY G.id DESC LIMIT :num;";
     const GET_LAST_INSERTED_GALLERY_FOR_CONSTRAINT = "SELECT id FROM gallery ORDER BY id DESC LIMIT 1";
     
@@ -38,6 +38,8 @@ class Gallery extends Model {
         
         self::setQueryParameter(array('galleryName' => $name, 'galleryDescription' => $description));
         self::modelInsert(self::ADD_NEW_GALLERY_STATEMENT);
+        
+        // DANGER: this could cause an error, if two galleries get created at once
         $newGalleryId = self::modelSelect(self::GET_LAST_INSERTED_GALLERY_FOR_CONSTRAINT_STATEMENT);
         self::setQueryParameter(array('uid' => $userId, 'gid' => $newGalleryId));
         self::modelInsert(self::ADD_USER_CONSTRAINT_STATEMENT);
@@ -101,23 +103,23 @@ class Gallery extends Model {
         switch ($whichSelectStatement) {
             
             case self::GET_GALLERY_BY_ID_STATEMENT:
-                $result = self::$database->performQuery(self::GET_GALLERY_BY_ID);
+                $result = self::$database->performQuery('Gallery', self::GET_GALLERY_BY_ID);
                 return new Gallery($result[0]['id'], $result[0]['name'], $result[0]['description']);
                 
             case self::GET_GALLERY_BY_USER_EMAIL_STATEMENT:
-                $result = self::$database->performQuery(self::GET_GALLERY_BY_USER_EMAIL);
+                $result = self::$database->performQuery('Gallery', self::GET_GALLERY_BY_USER_EMAIL);
                 return self::resultGalleryArray($result);
                 
             case self::GET_GALLERY_BY_USER_ID_STATEMENT:
-                $result = self::$database->performQuery(self::GET_GALLERY_BY_USER_ID);
+                $result = self::$database->performQuery('Gallery', self::GET_GALLERY_BY_USER_ID);
                 return self::resultGalleryArray($result);
                 
             case self::GET_X_GALLERIES_STATEMENT:
-                $result = self::$database->performQuery(self::GET_X_GALLERIES);
+                $result = self::$database->performQuery('Gallery', self::GET_X_GALLERIES);
                 return self::resultGalleryArray($result);
                 
             case self::GET_LAST_INSERTED_GALLERY_FOR_CONSTRAINT_STATEMENT:
-                $result = self::$database->performQuery(self::GET_LAST_INSERTED_GALLERY_FOR_CONSTRAINT);
+                $result = self::$database->performQuery('Gallery', self::GET_LAST_INSERTED_GALLERY_FOR_CONSTRAINT);
                 $id = $result[0]['id'];
                 return intval($id);
                 
@@ -149,9 +151,9 @@ class Gallery extends Model {
         
         switch ($whichInsertStatement) {
             case self::ADD_NEW_GALLERY_STATEMENT:
-                return self::$database->performQuery(self::ADD_NEW_GALLERY);
+                return self::$database->performQuery('Gallery', self::ADD_NEW_GALLERY);
             case self::ADD_USER_CONSTRAINT_STATEMENT:
-                return self::$database->performQuery(self::ADD_USER_CONSTRAINT);
+                return self::$database->performQuery('Gallery', self::ADD_USER_CONSTRAINT);
             default:
                 $_GET['Fail'] = self::QUERY_FAIL;
                 return null;
@@ -165,10 +167,10 @@ class Gallery extends Model {
         
         switch ($whichUpdateStatement) {
             case self::UPDATE_NAME_STATEMENT:
-                self::$database->performQuery(self::UPDATE_GALLERY_NAME);
+                self::$database->performQuery('Gallery', self::UPDATE_GALLERY_NAME);
                 break;
             case self::UPDATE_DESCRIPTION_STATEMENT:
-                self::$database->performQuery(self::UPDATE_GALLERY_DESCRIPTION);
+                self::$database->performQuery('Gallery', self::UPDATE_GALLERY_DESCRIPTION);
                 break;
             default:
                 $_GET['Fail'] = self::QUERY_FAIL;
@@ -182,7 +184,7 @@ class Gallery extends Model {
         
         switch ($whichDeleteStatement) {
             case self::DELETE_GALLERY_BY_ID_STATEMENT:
-                self::$database->performQuery(self::DELETE_GALLERY_NAME);
+                self::$database->performQuery('Gallery', self::DELETE_GALLERY_NAME);
                 break;
             default:
                 $_GET['Fail'] = self::QUERY_FAIL;

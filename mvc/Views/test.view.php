@@ -5,10 +5,11 @@
  * Time: 17:23
  */
 
-echo Gallery::addGallery(1,"TEST2","Dies ist die 2. Test-Gallerie");
+// Gallery::addGallery(2,"TEST2","Dies ist die 2. Test-Gallerie");
 
-$galleries = Gallery::getGalleriesByUserId(1);
+$galleries = Gallery::getGalleriesByUserId(2);
 
 foreach ($galleries as $gallery) {
-    echo var_dump($gallery);
+    echo join("<br>", [$gallery->getId(), $gallery->getName(), $gallery->getDescription()]);
+    echo "<br><br>";
 }
