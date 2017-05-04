@@ -11,7 +11,7 @@ class Gallery extends Model {
     private $name;
     private $description;
     
-    const GET_GALLERY_BY_ID = "SELECT name, description FROM gallery WHERE id = :idGallery";
+    const GET_GALLERY_BY_ID = "SELECT id, name, description FROM gallery WHERE id = :idGallery";
     const GET_GALLERY_BY_USER_EMAIL = "SELECT G.name, G.description, G.id, U.email FROM gallery AS G INNER JOIN user_gallery AS UG on G.id = UG.gallery_id INNER JOIN user AS U ON UG.user_id = U.id WHERE U.email = :email;";
     const GET_GALLERY_BY_USER_ID = "SELECT G.name, G.description, G.id, U.email FROM gallery AS G JOIN user_gallery AS UG on G.id = UG.gallery_id INNER JOIN user AS U ON UG.user_id = U.id WHERE U.id = :id;";
     const GET_X_GALLERIES        = "SELECT G.id, G.name, G.description FROM gallery ORDER BY G.id DESC LIMIT :num;";
@@ -104,10 +104,15 @@ class Gallery extends Model {
             
             case self::GET_GALLERY_BY_ID_STATEMENT:
                 $result = self::$database->performQuery('Gallery', self::GET_GALLERY_BY_ID);
+                if (count($result) == 0)
+                {
+                    return null; // changed from new Gallery to null
+                }
                 return new Gallery($result[0]['id'], $result[0]['name'], $result[0]['description']);
                 
             case self::GET_GALLERY_BY_USER_EMAIL_STATEMENT:
                 $result = self::$database->performQuery('Gallery', self::GET_GALLERY_BY_USER_EMAIL);
+     
                 return self::resultGalleryArray($result);
                 
             case self::GET_GALLERY_BY_USER_ID_STATEMENT:
@@ -194,7 +199,7 @@ class Gallery extends Model {
     
     public function getId() {
         
-        return $this->id;
+        return htmlentities($this->id);
     }
     
     public function setId($id) {
@@ -204,7 +209,7 @@ class Gallery extends Model {
     
     public function getName() {
         
-        return $this->name;
+        return htmlentities($this->name);
     }
     
     public function setName($name) {
@@ -214,7 +219,7 @@ class Gallery extends Model {
     
     public function getDescription() {
         
-        return $this->description;
+        return htmlentities($this->description);
     }
     
     public function setDescription($description) {

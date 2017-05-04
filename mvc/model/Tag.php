@@ -98,11 +98,11 @@ class Tag extends Model {
     
     public function getId()
     {
-        return $this->id;
+        return htmlentities($this->id);
     }
     
     public function getName()
     {
-        return $this->label;
+        return htmlentities($this->label);
     }
 }

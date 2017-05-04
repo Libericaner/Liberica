@@ -211,7 +211,7 @@ class User extends Model {
         
         self::setQueryParameter(array('email' => $email));
         $user = self::modelSelect(self::SELECT_USER_BY_NAME_STATEMENT);
-        if ($user != null && !($user->getEmail() == NULL)) {
+        if ($user != NULL && !($user->getEmail() == NULL)) {
             return TRUE;
         }
         else {
@@ -227,12 +227,12 @@ class User extends Model {
     
     public function getIdUser() {
         
-        return $this->id;
+        return htmlentities($this->id);
     }
     
     public function getEmail() {
         
-        return $this->email;
+        return htmlentities($this->email);
     }
     
     public function getPrename() {
@@ -242,12 +242,12 @@ class User extends Model {
     
     public function getName() {
         
-        return $this->name;
+        return htmlentities($this->name);
     }
     
     public function getPassword() {
         
-        return $this->password;
+        return htmlentities($this->password);
     }
     
 }
