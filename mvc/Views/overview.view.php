@@ -9,9 +9,10 @@
 
 <p>Du bist eingeloggt als: <?=$_SESSION[USER]?></p>
 
-<h2>Gallerien</h2>
+<hr>
+<h2>Galerien</h2>
 
-<h3>Deine Gallerien</h3>
+<h3>Deine Galerien</h3>
 <table>
     <tr>
         <th>Name</th>
@@ -27,9 +28,9 @@
 
 <h3>Gallerie erstellen</h3>
 <form action="" method="post">
-    <p><input type="text" name="name" placeholder="Name der Gallerie">
+    <p><input type="text" name="name" placeholder="Name der Galerie">
     <p><input type="text" name="description" placeholder="Beschreibung">
-    <p><input type="submit" name="sub[createGallery]" value="Gallerie erstellen"></p>
+    <p><input type="submit" name="sub[createGallery]" value="Galerie erstellen"></p>
 </form>
 
 <?php
@@ -39,9 +40,47 @@ if (isset($_GET['gallery']))
     if ($gallery = Gallery::getGalleryById(intval($_GET['gallery'])))
     {
         echo "<h3>";
-        echo "Bearbeite Gallerie «", $gallery->getName(), '»';
+        echo "Bearbeite Galerie «", $gallery->getName(), '»';
         echo "</h3>";
+        
+        ?>
+        <form action="" method="post">
+            <p><input type="text" name="name" value="<?=$gallery->getName()?>">
+                <input type="text" name="description" placeholder="Beschreibung" value="<?=$gallery->getDescription()?>">
+                <input type="submit" value="Änderungen speichern"></p>
+            <p><input type="password" placeholder="Passwort">
+                <input type="submit" name="sub[deleteGallery]" value="Galerie löschen"></p>
+            
+        </form>
+        <?php
     }
 }
 ?>
-
+<hr>
+<?php
+if (isset($_GET['gallery']))
+{
+    if ($gallery = Gallery::getGalleryById(intval($_GET['gallery'])))
+    {
+        $galleryName = $gallery->getName();
+        echo "<h2>Bilder von $galleryName</h2>";
+        
+        echo "<p>[Hier Uploadformular einfügen]</p>";
+        
+        foreach (Picture::getPicturesFromGallery($gallery->getId()) as $picture)
+        {
+            var_dump($picture);
+        }
+    }
+    else
+    {
+        echo "<h2>Bilder</h2>";
+        echo "<p>Es ist keine Galerie ausgewählt</p>";
+    }
+}
+else
+{
+    echo "<h2>Bilder</h2>";
+    echo "<p>Es ist keine Galerie ausgewählt</p>";
+}
+?>
