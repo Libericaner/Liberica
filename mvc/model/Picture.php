@@ -5,6 +5,10 @@
  * Date: 17.03.2017
  * Time: 08:44
  */
+
+define("PICTURENAME_IN_FILES_ARRAY", "picture");
+define("THUMBNAIL_SIZE", 192);
+
 class Picture extends Model {
     
     private $id;
@@ -12,7 +16,7 @@ class Picture extends Model {
     private $title;
     private $picture_blob;
     private $thumbnail_blob;
-    private $picture_ploc; // What is ploc?
+    private $picture_ploc; // What is ploc? -> Picture Location
     private $thumbnail_ploc; // Same
     
     private $picture;
@@ -33,18 +37,17 @@ class Picture extends Model {
     
     const DELETE_GALLERY_BY_ID = "DELETE FROM gallery WHERE id = :id";
     
-    public function __construct($galleryId = null, $id = null, $tag = null, $title = null, $pictureUnconverted = null, $thumbnailUnconverted = null) {
+    public function __construct($galleryId = null, $id = null, $tag = null, $title = null) {
         $this->galleryId = $galleryId;
         $this->id = $id;
         $this->tag = $tag;
         $this->title = $title;
-        $this->picture_blob = $this->picToBlob($pictureUnconverted);
-        $this->thumbnail_blob = $this->picToBlob($thumbnailUnconverted);
+        $this->picture_blob = $this->picToBlob(PICTURENAME_IN_FILES_ARRAY);
     }
     
-    public static function addPicture($galleryId, $tag, $title, $pictureUnconverted, $thumbnailUnconverted) {
+    public static function addPicture($galleryId, $tag, $title) {
         
-        self::setQueryParameter(array('tag'=>$tag,'title'=>$title,'picture_blob'=>self::picToBlob($pictureUnconverted),'thumbnail_blob'=>self::picToBlob($thumbnailUnconverted)));
+        self::setQueryParameter(array('tag'=>$tag,'title'=>$title,'picture_blob'=>self::picToBlob(PICTURENAME_IN_FILES_ARRAY),'thumbnail_blob'=>self::createThumbnailBlob(PICTURENAME_IN_FILES_ARRAY)));
         self::modelInsert(self::ADD_PICTURE_STATEMENT);
         $newPicId = self::modelSelect(self::GET_LAST_CREATED_PICTURE_ID_FOR_GALLERY_CONSTRAINT_STATEMENT);
         self::setQueryParameter(array('galleryId' => $galleryId, 'picId' => $newPicId));
@@ -53,48 +56,74 @@ class Picture extends Model {
     
     public static function updatePicture($id, $tag = null, $title = null) {
         
-        $updated = false;
-        
         if (isset($tag)) {
             self::setQueryParameter(array('id' => $id, 'tag' => $tag));
             self::modelUpdate(self::UPDATE_TAG_STATEMENT);
-            $updated = true;
-            // TODO: Don't set $updated always to true - this info doesn't help anybody
-            // Because you should know if $tag is null or not
         }
         if (isset($title)) {
             self::setQueryParameter(array('id' => $id, 'title' => $title));
             self::modelUpdate(self::UPDATE_TITLE_STATEMENT);
-            $updated = true;
         }
-        return $updated;
     }
     
-    public static function getPictureById(Integer $id) {
+    public static function getPictureById($id) {
         
         self::setQueryParameter(array('id' => $id));
         return self::modelSelect(self::GET_PICTURES_BLOB_BY_GALLERY_ID_STATEMENT);
     }
     
-    public static function getPicturesFromGallery(Integer $idGallery) {
+    public static function getPicturesFromGallery($idGallery) {
         
         self::setQueryParameter(array('idGallery' => $idGallery));
         return self::modelSelect(self::GET_PICTURES_BLOB_BY_GALLERY_ID_STATEMENT);
     }
     
-    public static function getNumberOfPictures(Integer $number) {
+    public static function getNumberOfPictures($number) {
         
         self::setQueryParameter(array('num' => $number));
         self::modelSelect(self::GET_X_PICTURES_BLOB_STATEMENT);
     }
     
-    public static function picToBlob($pic) {
-        //should return the pic as blob
+    public static function picToBlob($nameInFilesArray) {
+        
+        $tmp = $_FILES[$nameInFilesArray]['tmp_name'];
+        return file_get_contents($tmp);
     }
     
-    // Static
     public static function blobToPic($blob) {
-        //should return the blob as pic
+        
+        $puffer = base64_decode($blob);
+        return imagecreatefromstring($puffer);
+    }
+    
+    public static function createThumbnailBlob($nameInFilesArray) {
+        
+        //Source: http://www.php-einfach.de/experte/codeschnipsel/932-thumbnails/
+        $tmp_thumb = NULL;
+    
+        list($width, $height) = getimagesize($_FILES[$nameInFilesArray]['tmp_name']);
+        $imgratio=$width/$height;
+    
+        //Ist das Bild höher als breit?
+        if($imgratio>1)
+        {
+            $newwidth = THUMBNAIL_SIZE;
+            $newheight = THUMBNAIL_SIZE/$imgratio;
+        }
+        else
+        {
+            $newheight = THUMBNAIL_SIZE;
+            $newwidth = THUMBNAIL_SIZE*$imgratio;
+        }
+    
+        if(function_exists("imagecreatetruecolor")) {
+    
+            $thumb = imagecreatetruecolor($newwidth,$newheight);
+        } else {
+            $thumb = imagecreate ($newwidth,$newheight);
+        }
+        
+        return file_get_contents($thumb);
     }
     
     const GET_PICTURES_BLOB_BY_ID_STATEMENT = 1;
@@ -181,7 +210,7 @@ class Picture extends Model {
     
     public function getId() {
         
-        return $this->id;
+        return htmlentities($this->id);
     }
     
     public function setId($id) {
@@ -191,7 +220,7 @@ class Picture extends Model {
     
     public function getTag() {
         
-        return $this->tag;
+        return htmlentities($this->tag);
     }
     
     public function setTag($tag) {
@@ -201,7 +230,7 @@ class Picture extends Model {
     
     public function getTitle() {
         
-        return $this->title;
+        return htmlentities($this->title);
     }
     
     public function setTitle($title) {
@@ -211,7 +240,7 @@ class Picture extends Model {
     
     public function getPictureBlob() {
         
-        return $this->picture_blob;
+        return htmlentities($this->picture_blob);
     }
     
     public function setPictureBlob($picture_blob) {
@@ -221,7 +250,7 @@ class Picture extends Model {
     
     public function getThumbnailBlob() {
         
-        return $this->thumbnail_blob;
+        return htmlentities($this->thumbnail_blob);
     }
     
     public function setThumbnailBlob($thumbnail_blob) {
@@ -231,7 +260,7 @@ class Picture extends Model {
     
     public function getPicture() {
         
-        return $this->picture;
+        return htmlentities($this->picture);
     }
     
     public function setPicture($picture) {
@@ -241,7 +270,7 @@ class Picture extends Model {
     
     public function getThumbnail() {
         
-        return $this->thumbnail;
+        return htmlentities($this->thumbnail);
     }
     
     public function setThumbnail($thumbnail) {
