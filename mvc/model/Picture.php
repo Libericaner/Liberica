@@ -134,13 +134,21 @@ class Picture extends Model {
     private function modelSelect($whichSelectStatement) {
         switch($whichSelectStatement) {
             case self::GET_PICTURES_BLOB_BY_ID_STATEMENT:
-                return;
+                $result = self::$database->performQuery('Picture', self::GET_PICTURES_BLOB_BY_GALLERY_ID);
+                
+                return $this->resultToPicturesArray($result);
             case self::GET_PICTURES_BLOB_BY_GALLERY_ID_STATEMENT:
-                return;
+                $result = self::$database->performQuery('Picture', self::GET_PICTURES_BLOB_BY_GALLERY_ID);
+                
+                return $this->resultToPicturesArray($result);
             case self::GET_X_PICTURES_BLOB_STATEMENT:
-                return;
+                $result = self::$database->performQuery('Picture', self::GET_X_PICTURES_BLOB);
+                
+                 return $this->resultToPicturesArray($result);
             case self::GET_LAST_CREATED_PICTURE_ID_FOR_GALLERY_CONSTRAINT_STATEMENT:
-                return;
+                $result = self::$database->performQuery('Picture', self::GET_LAST_CREATED_PICTURE_ID_FOR_GALLERY_CONSTRAINT);
+                $id = $result[0]['id'];
+                return intval($id);
             default:
                 return;
         }
@@ -160,6 +168,8 @@ class Picture extends Model {
             
             $pics[] = $p;
         }
+        
+        return $pics;
     }
     
     const ADD_PICTURE_STATEMENT = 1;
