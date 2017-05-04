@@ -42,7 +42,6 @@ class Picture extends Model {
         $this->id = $id;
         $this->tag = $tag;
         $this->title = $title;
-        $this->picture_blob = $this->picToBlob(PICTURENAME_IN_FILES_ARRAY);
     }
     
     public static function addPicture($galleryId, $tag, $title) {
@@ -275,7 +274,7 @@ class Picture extends Model {
     
     public function getPicture() {
         
-        return htmlentities($this->picture);
+        return $this->picture;
     }
     
     public function setPicture($picture) {
@@ -285,7 +284,7 @@ class Picture extends Model {
     
     public function getThumbnail() {
         
-        return htmlentities($this->thumbnail);
+        return $this->thumbnail;
     }
     
     public function setThumbnail($thumbnail) {
