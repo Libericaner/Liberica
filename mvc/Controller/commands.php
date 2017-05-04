@@ -34,16 +34,30 @@ function Xlogin() {
 function Xregister() {
     if (isset($_POST['user'], $_POST['password']) && !empty($_POST['user']) && !empty($_POST['password']))
     {
-        if (User::addUser($_POST['user'], $_POST['password']))
-        {
-            if (User::verifyUser($_POST['user'], $_POST['password'])) {
-                $_SESSION[USER] = $_POST['user'];
-                header("Location: ./?view=hidden");
-                exit;
+        if(filter_var($_POST['user'], FILTER_VALIDATE_EMAIL)) {
+            if(preg_match('/[a-zA-Z0-9]{8,}/', $_POST['password'])) {
+                if(preg_match('/[0-9]/', $_POST['password']) == 1) {
+                    if(preg_match('/[$\_\.\-\+]/', $_POST['password'])) {
+                        if(preg_match('/[a-zA-Z]/', $_POST['password'])) {
+                            if (User::addUser($_POST['user'], $_POST['password'])) {
+                                if (User::verifyUser($_POST['user'], $_POST['password'])) {
+                                    $_SESSION['u'] = $_POST['user'];
+                                    header("Location: ./?view=hidden");
+                                    exit;
+                                }
+                                return 'Es ist ein Fehler aufgetreten';
+                            }
+                            return 'Benutzer existierts bereits';
+                        }
+                        return 'Mindestens ein Gross-/Kleinbuchstabe';
+                    }
+                    return 'Mindestens 1 Sonderzeichen';
+                }
+                return 'Mindestens 1 Zahl';
             }
-            return 'Es ist ein Fehler aufgetreten';
+            return 'Mindestens 8 Zeichen';
         }
-        return 'User konnte nicht registriert werden';
+        return 'Die E-Mail ist ungültig';
     }
     return 'Fülle alle Felder aus';
 }
