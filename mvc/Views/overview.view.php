@@ -48,7 +48,8 @@ if (isset($_GET['gallery']))
             <p><input type="text" name="name" value="<?=$gallery->getName()?>">
                 <input type="text" name="description" placeholder="Beschreibung" value="<?=$gallery->getDescription()?>">
                 <input type="submit" value="Änderungen speichern"></p>
-            <p><input type="password" placeholder="Passwort">
+            <p><input type="password" name="pw" placeholder="Passwort">
+                <input type="hidden" name="gid" value="<?=$gallery->getId()?>">
                 <input type="submit" name="sub[deleteGallery]" value="Galerie löschen"></p>
             
         </form>
