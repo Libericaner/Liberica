@@ -70,7 +70,7 @@ if (isset($_GET['gallery']))
         
         foreach (Picture::getPicturesFromGallery($gallery->getId()) as $picture)
         {
-            var_dump($picture);
+            echo random_int(0, 1) ? $picture->getPicture() : $picture->getThumbnail();
         }
     }
     else
