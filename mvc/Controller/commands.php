@@ -98,3 +98,20 @@ function XuploadImage(){
     }
 }
 
+function XdeleteGallery()
+{
+    if (!isset($_POST['pw'], $_POST['gid']))
+        return "Bitte gib dein Passwort ein";
+    
+    if (!User::verifyUser($_SESSION[USER], $_POST['pw']))
+        return "Passwort ungültig";
+    
+    $gallery = Gallery::getGalleryById($_POST['gid']);
+    
+    if (is_null($gallery))
+        return "Ein Fehler ist aufgetreten";
+    
+    Gallery::deleteGalleryById($gallery->getId());
+    
+    header("Location: ");
+}
