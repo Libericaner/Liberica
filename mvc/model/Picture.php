@@ -139,11 +139,11 @@ class Picture extends Model {
     private function modelInsert($whichInsertStatement) {
         switch ($whichInsertStatement) {
             case self::ADD_PICTURE_STATEMENT:
-                self::$database->performQuery(self::ADD_PICTURE);
+                self::$database->performQuery('Picture', self::ADD_PICTURE);
                 
                 return true;
             case self::ADD_GALLERY_CONSTRAINT_STATEMENT:
-                self::$database->performQuery(self::ADD_GALLERY_CONSTRAINT);
+                self::$database->performQuery('Picture', self::ADD_GALLERY_CONSTRAINT);
     
                 return true;
             default:
@@ -157,10 +157,10 @@ class Picture extends Model {
     private function modelUpdate($whichUpdateStatement) {
         switch($whichUpdateStatement) {
             case self::UPDATE_TAG_STATEMENT:
-                self::$database->performQuery(self::UPDATE_TAG);
+                self::$database->performQuery('Picture', self::UPDATE_TAG);
                 return true;
             case self::UPDATE_TITLE_STATEMENT:
-                self::$database->performQuery(self::UPDATE_TITLE);
+                self::$database->performQuery('Picture', self::UPDATE_TITLE);
                 return true;
             default:
                 return false;
@@ -172,7 +172,7 @@ class Picture extends Model {
     private function modelDelete($whichDeleteStatement) {
         switch ($whichDeleteStatement) {
             case self::DELETE_GALLERY_BY_ID_STATEMENT:
-                self::$database->performQuery(self::DELETE_GALLERY_BY_ID);
+                self::$database->performQuery('Picture', self::DELETE_GALLERY_BY_ID);
                 return true;
             default:
                 return false;

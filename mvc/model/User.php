@@ -125,7 +125,7 @@ class User extends Model {
         
         switch ($whichSelectStatement) {
             case self::SELECT_USER_BY_NAME_STATEMENT: //SELECT user by his name
-                $result = self::$database->performQuery(self::GET_USER_BY_NAME);
+                $result = self::$database->performQuery('User', self::GET_USER_BY_NAME);
                 
                 if (count($result) == 0)
                 {
@@ -134,12 +134,12 @@ class User extends Model {
                 return new User($result[0]['id'], $result[0]['email']);
                 
             case self::SELECT_PASSWORD_HASH_STATEMENT: //Get password hash by username for verification
-                $result = self::$database->performQuery(self::GET_PASSWORD_HASH);
+                $result = self::$database->performQuery('User', self::GET_PASSWORD_HASH);
     
                 return new User(NULL, NULL, $result[0]['password']);
                 
             case self::SELECT_USER_BY_ID_STATEMENT:
-                $result = self::$database->performQuery(self::GET_USER_BY_ID);
+                $result = self::$database->performQuery('User', self::GET_USER_BY_ID);
     
                 return new User(NULL, $result[0]['email']);
                 
@@ -156,7 +156,7 @@ class User extends Model {
         
         switch ($whichInsertStatement) {
             case self::ADD_USER_STATEMENT:
-                self::$database->performQuery(self::ADD_USER);
+                self::$database->performQuery('User', self::ADD_USER);
                 break;
             default:
                 self::$fails = self::QUERY_FAIL;
@@ -174,16 +174,16 @@ class User extends Model {
         
         switch ($whichUpdateStatement) {
             case self::UPDATE_USERNAME_STATEMENT:
-                self::$database->performQuery(self::UPDATE_USERNAME);
+                self::$database->performQuery('User', self::UPDATE_USERNAME);
                 break;
             case self::UPDATE_PASSWORD_STATEMENT:
-                self::$database->performQuery(self::UPDATE_PASSWORD);
+                self::$database->performQuery('User', self::UPDATE_PASSWORD);
                 break;
             case self::UPDATE_PRENAME_STATEMENT:
-                self::$database->performQuery(self::UPDATE_PRENAME);
+                self::$database->performQuery('User', self::UPDATE_PRENAME);
                 break;
             case self::UPDATE_NAME_STATEMENT:
-                self::$database->performQuery(self::UPDATE_NAME);
+                self::$database->performQuery('User', self::UPDATE_NAME);
                 break;
             default:
                 self::$fails = self::QUERY_FAIL;
@@ -198,7 +198,7 @@ class User extends Model {
         
         switch ($whichDeleteStatement) {
             case self::DELETE_USER_BY_ID_STATEMENT:
-                self::$database->performQuery(self::DELETE_USER_BY_ID);
+                self::$database->performQuery('User', self::DELETE_USER_BY_ID);
                 break;
             default:
                 self::$fails = self::QUERY_FAIL;
