@@ -38,7 +38,7 @@ class Database {
         }
     }
     
-    public function performQuery(Model $model, $queryPattern) {
+    public function performQuery($model, $queryPattern) {
         
         $stmt = $this->connection->prepare($queryPattern);
         
