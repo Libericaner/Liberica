@@ -42,7 +42,6 @@ class Picture extends Model {
         $this->id = $id;
         $this->tag = $tag;
         $this->title = $title;
-        $this->picture_blob = $this->picToBlob(PICTURENAME_IN_FILES_ARRAY);
     }
     
     public static function addPicture($galleryId, $tag, $title) {
@@ -97,9 +96,21 @@ class Picture extends Model {
     }
     
     public static function blobToPic($blob) {
-        
-        $puffer = base64_decode($blob);
+        return '<img src="data:image/jpg;base64,' .  base64_encode($blob)  . '" />';
+        $puffer = base64_encode($blob);
+        return $puffer;
+        imagepng(imagecreatefromstring($puffer));
+        return;
         return imagecreatefromstring($puffer);
+        
+        $image = imagecreatefromstring($blob);
+    
+        ob_start(); //You could also just output the $image via header() and bypass this buffer capture.
+        imagejpeg($image, null, 80);
+        $data = ob_get_contents();
+        ob_end_clean();
+        return '<img src="data:image/jpg;base64,' .  base64_encode($data)  . '" />';
+        
     }
     
     public static function createThumbnailBlob($nameInFilesArray) {
@@ -164,7 +175,6 @@ class Picture extends Model {
         $pics = array();
         foreach ($result as $pic) {
             $p = new Picture();
-            
             $p->setPicture($p->blobToPic($pic['picture_blob']));
             $p->setThumbnail($p->blobToPic($pic['thumbnail_blob']));
             $p->setTag($pic['tag']);
@@ -275,7 +285,7 @@ class Picture extends Model {
     
     public function getPicture() {
         
-        return htmlentities($this->picture);
+        return $this->picture;
     }
     
     public function setPicture($picture) {
@@ -285,7 +295,7 @@ class Picture extends Model {
     
     public function getThumbnail() {
         
-        return htmlentities($this->thumbnail);
+        return $this->thumbnail;
     }
     
     public function setThumbnail($thumbnail) {
