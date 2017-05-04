@@ -84,6 +84,12 @@ class Picture extends Model {
         self::modelSelect(self::GET_X_PICTURES_BLOB_STATEMENT);
     }
     
+    public static function deletePictureById($id) {
+    
+        self::setQueryParameter(array('id' => $id));
+        self::modelDelete(self::DELETE_GALLERY_BY_ID_STATEMENT);
+    }
+    
     public static function picToBlob($nameInFilesArray) {
         
         $tmp = $_FILES[$nameInFilesArray]['tmp_name'];
@@ -131,20 +137,20 @@ class Picture extends Model {
     const GET_X_PICTURES_BLOB_STATEMENT = 3;
     const GET_LAST_CREATED_PICTURE_ID_FOR_GALLERY_CONSTRAINT_STATEMENT = 4;
     
-    private function modelSelect($whichSelectStatement) {
+    private static function modelSelect($whichSelectStatement) {
         switch($whichSelectStatement) {
             case self::GET_PICTURES_BLOB_BY_ID_STATEMENT:
                 $result = self::$database->performQuery('Picture', self::GET_PICTURES_BLOB_BY_GALLERY_ID);
                 
-                return $this->resultToPicturesArray($result);
+                return self::resultToPicturesArray($result);
             case self::GET_PICTURES_BLOB_BY_GALLERY_ID_STATEMENT:
                 $result = self::$database->performQuery('Picture', self::GET_PICTURES_BLOB_BY_GALLERY_ID);
                 
-                return $this->resultToPicturesArray($result);
+                return self::resultToPicturesArray($result);
             case self::GET_X_PICTURES_BLOB_STATEMENT:
                 $result = self::$database->performQuery('Picture', self::GET_X_PICTURES_BLOB);
                 
-                 return $this->resultToPicturesArray($result);
+                 return self::resultToPicturesArray($result);
             case self::GET_LAST_CREATED_PICTURE_ID_FOR_GALLERY_CONSTRAINT_STATEMENT:
                 $result = self::$database->performQuery('Picture', self::GET_LAST_CREATED_PICTURE_ID_FOR_GALLERY_CONSTRAINT);
                 $id = $result[0]['id'];
@@ -154,8 +160,7 @@ class Picture extends Model {
         }
     }
     
-    // ?
-    private function resultToPicturesArray($result) {
+    private static function resultToPicturesArray($result) {
         $pics = array();
         foreach ($result as $pic) {
             $p = new Picture();
@@ -175,7 +180,7 @@ class Picture extends Model {
     const ADD_PICTURE_STATEMENT = 1;
     const ADD_GALLERY_CONSTRAINT_STATEMENT = 2;
     
-    private function modelInsert($whichInsertStatement) {
+    private static function modelInsert($whichInsertStatement) {
         switch ($whichInsertStatement) {
             case self::ADD_PICTURE_STATEMENT:
                 self::$database->performQuery('Picture', self::ADD_PICTURE);
@@ -193,7 +198,7 @@ class Picture extends Model {
     const UPDATE_TAG_STATEMENT = 1;
     const UPDATE_TITLE_STATEMENT = 2;
     
-    private function modelUpdate($whichUpdateStatement) {
+    private static function modelUpdate($whichUpdateStatement) {
         switch($whichUpdateStatement) {
             case self::UPDATE_TAG_STATEMENT:
                 self::$database->performQuery('Picture', self::UPDATE_TAG);
@@ -208,7 +213,7 @@ class Picture extends Model {
     
     const DELETE_GALLERY_BY_ID_STATEMENT = 1;
     
-    private function modelDelete($whichDeleteStatement) {
+    private static function modelDelete($whichDeleteStatement) {
         switch ($whichDeleteStatement) {
             case self::DELETE_GALLERY_BY_ID_STATEMENT:
                 self::$database->performQuery('Picture', self::DELETE_GALLERY_BY_ID);
