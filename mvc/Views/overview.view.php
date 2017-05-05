@@ -70,7 +70,7 @@ if (isset($_GET['gallery']))
         ?>
         <form action="" method="post" enctype="multipart/form-data">
             <p><input type="text" name="title" placeholder="Picture Name">
-            <input type="text" name="tags" placeholder="Tags(splittet with ;)">
+            <input type="text" name="tags" placeholder="Tags (tag1;tag2)">
             <input type="file" name="picture" >
             <input type="hidden" name="galleryid" placeholder="Description" value="<?=$gallery->getId()?>">
             <input type="submit" name="sub[uploadImage]">
@@ -80,9 +80,11 @@ if (isset($_GET['gallery']))
         echo "<div id='imgcont'>";
         foreach (Picture::getPicturesFromGallery($gallery->getId()) as $picture)
         {
-            echo "<div class='sqr'>";
-            echo random_int(0, 1) ? $picture->getPicture() : $picture->getNewThumb();
-            echo "</div>";
+            $pictureId = $picture->getId();
+            echo "<div class='sqr'><a href='./?view=overview&gallery=${_GET['gallery']}&picture=${pictureId}'>";
+            echo "<img src='./?view=picture&id=$pictureId' />";
+            //echo random_int(0, 1) ? $picture->getPicture() : $picture->getNewThumb();
+            echo "</a></div>";
         }
         echo "<span class='clr'></span></div>";
         
@@ -99,4 +101,16 @@ else
     echo "<h2>Bilder</h2>";
     echo "<p>Es ist keine Galerie ausgewählt</p>";
 }
+
+if (isset($_GET['picture']) && !empty($_GET['picture']))
+{
+    ?>
+    <div class="full">
+        <?=Picture::getPictureById($_GET['picture'])->getPicture()?>
+        <div class="cmd"><a href="">Löschen</a></div>
+    </div>
+    <?php
+}
+
 ?>
+

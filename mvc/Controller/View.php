@@ -31,6 +31,8 @@ class View {
         
         $isLoggedIn = isset($_SESSION[USER]);
         
+        ob_start();
+        
         printHead();
         
         printMenu();
@@ -39,6 +41,11 @@ class View {
         include $this->getValidViewPath($this->sId);
         
         printFoot();
+        
+        $content = ob_get_contents();
+        ob_end_clean();
+        
+        echo $content;
     }
     
     private function getValidViewPath($view) {
