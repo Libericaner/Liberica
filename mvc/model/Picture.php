@@ -13,6 +13,7 @@ class Picture extends Model {
     
     private $id;
     private $tag;
+    private $tags;
     private $title;
     private $picture_blob;
     private $thumbnail_blob;
@@ -28,6 +29,7 @@ class Picture extends Model {
     const GET_PICTURES_BLOB_BY_GALLERY_ID = "SELECT P.id, P.tag, P.title, P.picture_blob, P.thumbnail_blob FROM pic AS P INNER JOIN gallery_pic AS GP ON P.id = GP.pic_id INNER JOIN gallery AS G ON G.id = GP.gallery_id WHERE G.id = :idGallery;";
     const GET_X_PICTURES_BLOB = "SELECT id, tag, title, picture_blob, picture_thumbnail FROM pic ORDER BY id DESC LIMIT :num;";
     const GET_LAST_CREATED_PICTURE_ID_FOR_GALLERY_CONSTRAINT = "SELECT id from pic ORDER BY id DESC LIMIT 1";
+    const GET_TAGS_OF_PICTURE = "SELECT T.tag_name, T.tag_id FROM pic AS P INNER JOIN tag_pic AS TP ON P.id = TP.pic_id INNER JOIN tag AS T ON T.tag_id = TP.tag_id WHERE P.id = :pid;";
     
     const ADD_PICTURE = "INSERT INTO pic (tag, title, picture_blob, thumbnail_blob) VALUES (:tag, :title, :picture_blob, :thumbnail_blob);";
     const ADD_GALLERY_CONSTRAINT = "INSERT INTO gallery_pic (gallery_id, pic_id) VALUES (:galleryId, :picId)";
@@ -38,6 +40,7 @@ class Picture extends Model {
     const DELETE_GALLERY_BY_ID = "DELETE FROM gallery WHERE id = :id";
     
     public function __construct($galleryId = null, $id = null, $tag = null, $title = null) {
+        
         $this->galleryId = $galleryId;
         $this->id = $id;
         $this->tag = $tag;
@@ -51,6 +54,26 @@ class Picture extends Model {
         $newPicId = self::modelSelect(self::GET_LAST_CREATED_PICTURE_ID_FOR_GALLERY_CONSTRAINT_STATEMENT);
         self::setQueryParameter(array('galleryId' => $galleryId, 'picId' => $newPicId));
         self::modelInsert(self::ADD_GALLERY_CONSTRAINT_STATEMENT);
+    }
+    
+    public function addTag($tagName) {
+        
+        if (Tag::tagExists($tagName)) {
+            $t = Tag::getTagByName($tagName);
+            Tag::setPictureTagConstraint($t->getId(), $this->getId());
+        } else {
+            $t = Tag::create($tagName);
+            Tag::setPictureTagConstraint($t->getId(), $this->getId());
+        }
+    }
+    
+    public function removeTag($tagName) {
+        if(in_array($tagName,$this->getTags())) {
+            $t = Tag::getTagByName($tagName);
+            Tag::removePictureTagConstraint($t->getId(), $this->getId());
+        } else {
+            return NULL;
+        }
     }
     
     public static function updatePicture($id, $tag = null, $title = null) {
@@ -144,6 +167,7 @@ class Picture extends Model {
     const GET_PICTURES_BLOB_BY_GALLERY_ID_STATEMENT = 2;
     const GET_X_PICTURES_BLOB_STATEMENT = 3;
     const GET_LAST_CREATED_PICTURE_ID_FOR_GALLERY_CONSTRAINT_STATEMENT = 4;
+    const GET_TAGS_OF_PICTURE_STATEMENT = 5;
     
     private static function modelSelect($whichSelectStatement) {
         switch($whichSelectStatement) {
@@ -163,12 +187,16 @@ class Picture extends Model {
                 $result = self::$database->performQuery('Picture', self::GET_LAST_CREATED_PICTURE_ID_FOR_GALLERY_CONSTRAINT);
                 $id = $result[0]['id'];
                 return intval($id);
+            case self::GET_TAGS_OF_PICTURE_STATEMENT:
+                $result = self::$database->performQuery('Picture', self::GET_TAGS_OF_PICTURE);
+                
+                return Tag::tagsToArray($result);
             default:
                 return NULL;
         }
     }
     
-    private static function resultToPicturesArray($result) {
+    public static function resultToPicturesArray($result) {
         $pics = array();
         foreach ($result as $pic) {
             $p = new Picture();
@@ -179,7 +207,7 @@ class Picture extends Model {
             $p->setTag($pic['tag']);
             $p->setTitle($pic['title']);
             $p->setId($pic['id']);
-            
+            $p->setTags(self::modelSelect(self::GET_TAGS_OF_PICTURE_STATEMENT));
             $pics[] = $p;
         }
         
@@ -347,5 +375,13 @@ class Picture extends Model {
     public function setThumbnail($thumbnail) {
         
         $this->thumbnail = $thumbnail;
+    }
+    
+    public function getTags() {
+        return $this->tags;
+    }
+    
+    public function setTags($tagsArray) {
+        $this->tags = $tagsArray;
     }
 }
