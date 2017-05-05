@@ -13,8 +13,13 @@ class Tag extends Model {
     const GET_TAG_BY_ID = "SELECT tag_id, tag_name FROM tag WHERE tag_id = :id";
     const GET_TAG_BY_NAME = "SELECT tag_id, tag_name FROM tag WHERE tag_name = :name";
     const GET_ALL = "SELECT * FROM tag";
+    const GET_TAG_EXISTS = "SELECT * FROM tag WHERE tag_name = :tag_name;";
+    const GET_PICTURES_BY_TAG = "SELECT P.id, P.tag, P.title, P.picture_blob, P.thumbnail_blob FROM tag AS T INNER JOIN tag_pic AS TP ON T.tag_id = TP.tag_id INNER JOIN pic AS P ON P.id = TP.pic_id WHERE T.tag_id = :tid;";
     
     const INSERT_TAG = "INSERT INTO tag (tag_name) VALUES (:name)";
+    const ADD_TAG_TO_PICTURE = "INSERT INTO tag_pic (tag_id, pic_id) VALUES (:tid, :pid)";
+    
+    const REMOVE_CONSTRAINT_WITH_PIC = "DELETE FROM tag_pic WHERE tag_id = :tid AND pic_id = :pid";
     
     public function __construct($id, $name) {
         $this->id = $id;
@@ -33,6 +38,36 @@ class Tag extends Model {
         self::modelInsert(self::INSERT_TAG_STATEMENT);
         
         return self::getTagByName($name);
+    }
+    
+    public static function searchPictures($tagName) {
+        
+        if (self::tagExists($tagName)) {
+    
+            $t = self::getTagByName($tagName);
+            self::setQueryParameter(['tid' => $t->getId()]);
+            return self::modelSelect(self::GET_PICTURES_BY_TAG_STATEMENT);
+        } else {
+            return NULL;
+        }
+    }
+    
+    public static function tagExists($name) {
+        
+        self::setQueryParameter(['tag_name' => $name]);
+        return self::modelSelect(self::GET_TAG_EXISTS_STATEMENT);
+    }
+    
+    public static function setPictureTagConstraint($tagId, $picId) {
+        
+        self::setQueryParameter(['tid' => $tagId, 'pid' => $picId]);
+        self::modelInsert(self::ADD_TAG_TO_PICTURE_STATEMENT);
+    }
+    
+    public static function removePictureTagConstraint($tagId, $picId) {
+        
+        self::setQueryParameter(['tid' => $tagId, 'pid' => $picId]);
+        self::modelDelete(self::REMOVE_CONSTRAINT_WITH_PIC_STATEMENT);
     }
     
     public static function getTagByName($name)
@@ -55,6 +90,8 @@ class Tag extends Model {
     const GET_TAG_BY_ID_STATEMENT = 1;
     const GET_TAG_BY_NAME_STATEMENT = 2;
     const GET_ALL_STATEMENT = 3;
+    const GET_TAG_EXISTS_STATEMENT = 4;
+    const GET_PICTURES_BY_TAG_STATEMENT = 5;
     
     private function modelSelect($whichSelectStatement) {
         
@@ -68,13 +105,27 @@ class Tag extends Model {
                 return ($result && $result[0]) ? new Tag($result[0]['tag_id'], $result[0]['tag_name']) : null;
             case self::GET_ALL_STATEMENT:
                 $result = self::$database->performQuery('Tag', self::GET_ALL);
-                $arr = array();
-                foreach ($result as $item)
-                {
-                    $arr[] = new Tag($item['tag_id'], $item['tag_name']);
-                }
-                return $arr;
+                return self::tagsToArray($result);
+            case self::GET_TAG_EXISTS_STATEMENT:
+                $result = self::$database->performQuery('Tag', self::GET_TAG_EXISTS);
+                return !empty($result);
+            case self::GET_PICTURES_BY_TAG_STATEMENT:
+                $result = self::$database->performQuery('Tag', self::GET_PICTURES_BY_TAG);
+                return Picture::resultToPicturesArray($result);
         }
+    }
+    
+    public static function tagsToArray($result) {
+        $ts = array();
+        foreach ($result as $tag) {
+            $t = new Tag();
+            $t->setId($tag['tag_id']);
+            $t->setName($tag['tag_name']);
+            
+            $ts[] = $t;
+        }
+        
+        return $ts;
     }
     
     const INSERT_TAG_STATEMENT = 1;
@@ -85,6 +136,8 @@ class Tag extends Model {
         {
             case self::INSERT_TAG_STATEMENT:
                 return self::$database->performQuery('Tag', self::INSERT_TAG);
+            case self::ADD_TAG_TO_PICTURE_STATEMENT:
+                return self::$database->performQuery('Tag', self::ADD_TAG_TO_PICTURE);
         }
     }
     
@@ -92,8 +145,15 @@ class Tag extends Model {
         // TODO: Implement modelUpdate() method.
     }
     
+    const REMOVE_CONSTRAINT_WITH_PIC_STATEMENT = 1;
+    
     private function modelDelete(Integer $whichDeleteStatement) {
-        // TODO: Implement modelDelete() method.
+    
+        switch ($whichDeleteStatement)
+        {
+            case self::REMOVE_CONSTRAINT_WITH_PIC_STATEMENT:
+                return self::$database->performQuery('Tag', self::REMOVE_CONSTRAINT_WITH_PIC);
+        }
     }
     
     public function getId()
@@ -104,5 +164,15 @@ class Tag extends Model {
     public function getName()
     {
         return htmlentities($this->label);
+    }
+    
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+    
+    public function setName($name)
+    {
+        $this->label = $name;
     }
 }
