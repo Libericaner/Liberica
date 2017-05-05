@@ -90,7 +90,7 @@ function XuploadImage(){
         if ($isImage !== FALSE) {
             if ($file_size < 4000000) {
                 $p->addPicture($_POST['galleryid'], $_POST['tags'], $_POST['title']);
-                header("Location: ");
+                header("Location: ./?view=overview");
             }
             return 'Das Bild ist zu gross';
         
@@ -100,8 +100,6 @@ function XuploadImage(){
     
     }
     return 'Angaben fehlen';
-  }
-    }
 }
 
 function XdeleteGallery()
