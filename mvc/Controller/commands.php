@@ -66,37 +66,41 @@ function XcreateGallery()
 {
     if (isset($_POST['name'], $_POST['description']))
     {
-        $u = User::getUserByEmail($_SESSION[USER]);
+        if (empty($_POST['name'])) {
+            return 'Gib einen Namen ein';
+        }
         
+        $u = User::getUserByEmail($_SESSION[USER]);
+          
         $g = new Gallery();
         $g->addGallery(intval($u->getIdUser()), $_POST['name'], $_POST['description']);
         header("Location: ");
-    }
-    return "Angaben sind nicht komplett";
-}
+      }
+  }
 
 function XuploadImage(){
-    if (isset($_POST['title'], $_POST['tags'], $_POST['picture'], $_POST['galleryid']))
-    {
-        //$galleryId, $tag, $title, $pictureUnconverted, $thumbnailUnconverted
-        
+
+    if (isset($_POST['title'], $_POST['tags'], $_POST['galleryid']) && !empty($_POST['title']) && $_FILES['picture']['name'] != "") {
+    
         $p = new Picture();
     
-        $tmp = explode('.', $_POST['picture']);
-        $ext = end($tmp);
+        $file_size = $_FILES['picture']['size'];
+        $isImage = getimagesize($_FILES["picture"]['tmp_name']);
     
-        $allowed_extensions = array('png', 'jpg', 'jpeg');
-        if(in_array($ext, $allowed_extensions))
-        {
-            if (filesize($_POST[picture]) < 4000000) {
-                $p->addPicture($_POST['galleryid'], $_POST['tags'], $_POST['title'], $_POST['picture']);
+        if ($isImage !== FALSE) {
+            if ($file_size < 4000000) {
+                $p->addPicture($_POST['galleryid'], $_POST['tags'], $_POST['title']);
                 header("Location: ");
             }
             return 'Das Bild ist zu gross';
+        
+        } else {
+            return 'Der Upload ist kein Bild';
         }
-        return 'Die Datei ist kein gültiges Format(JPG, PNG, JPEG)';
+    
     }
-}
+    return 'Angaben fehlen';
+  }
 
 function XdeleteGallery()
 {
