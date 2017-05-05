@@ -79,7 +79,8 @@ function XcreateGallery()
   }
 
 function XuploadImage(){
-
+    
+    error_reporting(E_ERROR | E_PARSE);
     if (isset($_POST['title'], $_POST['tags'], $_POST['galleryid']) && !empty($_POST['title']) && $_FILES['picture']['name'] != "") {
     
         $p = new Picture();

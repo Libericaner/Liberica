@@ -92,7 +92,7 @@ class Picture extends Model {
     public static function getPictureById($id) {
         
         self::setQueryParameter(array('id' => $id));
-        return self::modelSelect(self::GET_PICTURES_BLOB_BY_GALLERY_ID_STATEMENT);
+        return self::modelSelect(self::GET_PICTURES_BLOB_BY_ID_STATEMENT);
     }
     
     public static function getPicturesFromGallery($idGallery) {
@@ -173,9 +173,9 @@ class Picture extends Model {
     private static function modelSelect($whichSelectStatement) {
         switch($whichSelectStatement) {
             case self::GET_PICTURES_BLOB_BY_ID_STATEMENT:
-                $result = self::$database->performQuery('Picture', self::GET_PICTURES_BLOB_BY_GALLERY_ID);
+                $result = self::$database->performQuery('Picture', self::GET_PICTURE_BLOB_BY_ID);
                 
-                return self::resultToPicturesArray($result);
+                return self::resultToPicturesArray($result)[0];
             case self::GET_PICTURES_BLOB_BY_GALLERY_ID_STATEMENT:
                 $result = self::$database->performQuery('Picture', self::GET_PICTURES_BLOB_BY_GALLERY_ID);
                 
