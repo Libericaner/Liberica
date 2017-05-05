@@ -69,35 +69,39 @@ function XcreateGallery()
         if (empty($_POST['name'])) {
             return 'Gib einen Namen ein';
         }
-        $u = User::getUserByEmail($_SESSION[USER]);
         
+        $u = User::getUserByEmail($_SESSION[USER]);
+          
         $g = new Gallery();
         $g->addGallery(intval($u->getIdUser()), $_POST['name'], $_POST['description']);
         header("Location: ");
-    }
-}
+      }
+  }
 
 function XuploadImage(){
+
+    if (isset($_POST['title'], $_POST['tags'], $_POST['galleryid']) && !empty($_POST['title']) && $_FILES['picture']['name'] != "") {
     
-        if (isset($_POST['title'], $_POST['tags'], $_POST['galleryid']) && !empty($_POST['title']) && $_FILES['picture']['name'] != "") {
-        
-            $p = new Picture();
-            
-            $file_size = $_FILES['picture']['size'];
-        
-            $isImage = getimagesize($_FILES["picture"]['tmp_name']);
-            if ($isImage !== FALSE) {
-                if ($file_size < 4000000) {
-                    $p->addPicture($_POST['galleryid'], $_POST['tags'], $_POST['title']);
-                    header("Location: ");
-                }
-                return 'Das Bild ist zu gross';
-            
-            } else {
-                return 'Der Upload ist kein Bild';
+        $p = new Picture();
+    
+        $file_size = $_FILES['picture']['size'];
+        $isImage = getimagesize($_FILES["picture"]['tmp_name']);
+    
+        if ($isImage !== FALSE) {
+            if ($file_size < 4000000) {
+                $p->addPicture($_POST['galleryid'], $_POST['tags'], $_POST['title']);
+                header("Location: ");
             }
+            return 'Das Bild ist zu gross';
+        
+        } else {
+            return 'Der Upload ist kein Bild';
         }
-        return 'Angaben fehlen';
+    
+    }
+    return 'Angaben fehlen';
+  }
+    }
 }
 
 function XdeleteGallery()
