@@ -42,9 +42,14 @@ class Tag extends Model {
     
     public static function searchPictures($tagName) {
         
-        $t = self::getTagByName($tagName);
-        self::setQueryParameter(['tid' => $t->getId()]);
-        return self::modelSelect(self::GET_PICTURES_BY_TAG_STATEMENT);
+        if (self::tagExists($tagName)) {
+    
+            $t = self::getTagByName($tagName);
+            self::setQueryParameter(['tid' => $t->getId()]);
+            return self::modelSelect(self::GET_PICTURES_BY_TAG_STATEMENT);
+        } else {
+            return NULL;
+        }
     }
     
     public static function tagExists($name) {

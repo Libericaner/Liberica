@@ -71,6 +71,7 @@ class Picture extends Model {
         if(in_array($tagName,$this->getTags())) {
             $t = Tag::getTagByName($tagName);
             Tag::removePictureTagConstraint($t->getId(), $this->getId());
+            unset($this->tags[array_search($tagName, $this->tags)]);
         } else {
             return NULL;
         }
