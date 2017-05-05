@@ -65,13 +65,28 @@ if (isset($_GET['gallery']))
     {
         $galleryName = $gallery->getName();
         echo "<h2>Bilder von $galleryName</h2>";
+    
         
-        echo "<p>[Hier Uploadformular einfügen]</p>";
-        
+        ?>
+        <form action="" method="post" enctype="multipart/form-data">
+            <p><input type="text" name="title" placeholder="Picture Name">
+            <input type="text" name="tags" placeholder="Tags(splittet with ;)">
+            <input type="file" name="picture" >
+            <input type="hidden" name="galleryid" placeholder="Description" value="<?=$gallery->getId()?>">
+            <input type="submit" name="sub[uploadImage]">
+        </form>
+        <?php
+    
+        echo "<div id='imgcont'>";
         foreach (Picture::getPicturesFromGallery($gallery->getId()) as $picture)
         {
-            echo 0 && random_int(0, 1) ? $picture->getPicture() : $picture->getNewThumb();
+            echo "<div class='sqr'>";
+            echo random_int(0, 1) ? $picture->getPicture() : $picture->getNewThumb();
+            echo "</div>";
         }
+        echo "<span class='clr'></span></div>";
+        
+        ?><div style="background-color: aqua; height: 20px; display: inline-block"></div><?php
     }
     else
     {
