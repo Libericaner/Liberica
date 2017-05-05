@@ -101,6 +101,8 @@ function XuploadImage(){
     }
     return 'Angaben fehlen';
   }
+    }
+}
 
 function XdeleteGallery()
 {
