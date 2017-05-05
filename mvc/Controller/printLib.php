@@ -16,7 +16,7 @@ function printHead($title = 'PHP-MVC by DJM') {
     <!DOCTYPE html>
     
     <meta charset="UTF-8"><title><?=$title?></title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="<?=CSS_PATH?>">
     
     <?php

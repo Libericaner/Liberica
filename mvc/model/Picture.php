@@ -7,7 +7,7 @@
  */
 
 define("PICTURENAME_IN_FILES_ARRAY", "picture");
-define("THUMBNAIL_SIZE", 192);
+define("THUMBNAIL_SIZE", 512);
 
 class Picture extends Model {
     
@@ -97,28 +97,18 @@ class Picture extends Model {
     
     public static function blobToPic($blob) {
         return '<img src="data:image/jpg;base64,' .  base64_encode($blob)  . '" />';
-        $puffer = base64_encode($blob);
-        return $puffer;
-        imagepng(imagecreatefromstring($puffer));
-        return;
-        return imagecreatefromstring($puffer);
-        
-        $image = imagecreatefromstring($blob);
-    
-        ob_start(); //You could also just output the $image via header() and bypass this buffer capture.
-        imagejpeg($image, null, 80);
-        $data = ob_get_contents();
-        ob_end_clean();
-        return '<img src="data:image/jpg;base64,' .  base64_encode($data)  . '" />';
-        
     }
     
     public static function createThumbnailBlob($nameInFilesArray) {
-        
-        //Source: http://www.php-einfach.de/experte/codeschnipsel/932-thumbnails/
-        $tmp_thumb = NULL;
     
-        list($width, $height) = getimagesize($_FILES[$nameInFilesArray]['tmp_name']);
+        $image = imagecreatefromstring(self::picToBlob($nameInFilesArray));
+    
+        $tempName = bin2hex(random_bytes(8)) . '.pic';
+    
+        imagepng($image, $tempName);
+    
+        list($width, $height) = getimagesize($tempName);
+    
         $imgratio=$width/$height;
     
         //Ist das Bild höher als breit?
@@ -133,14 +123,21 @@ class Picture extends Model {
             $newwidth = THUMBNAIL_SIZE*$imgratio;
         }
     
-        if(function_exists("imagecreatetruecolor")) {
+        $thumb = imagecreatetruecolor ($newwidth,$newheight);
     
-            $thumb = imagecreatetruecolor($newwidth,$newheight);
-        } else {
-            $thumb = imagecreate ($newwidth,$newheight);
-        }
-        
-        return file_get_contents($thumb);
+        imagecopyresized($thumb, $image, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
+    
+        unlink($tempName);
+    
+    
+        ob_start();
+        imagepng($thumb);
+        $contents = ob_get_contents();
+        ob_end_clean();
+    
+        imagedestroy($image);
+    
+        return $contents;
     }
     
     const GET_PICTURES_BLOB_BY_ID_STATEMENT = 1;
@@ -167,7 +164,7 @@ class Picture extends Model {
                 $id = $result[0]['id'];
                 return intval($id);
             default:
-                return;
+                return NULL;
         }
     }
     
@@ -175,8 +172,10 @@ class Picture extends Model {
         $pics = array();
         foreach ($result as $pic) {
             $p = new Picture();
-            $p->setPicture($p->blobToPic($pic['picture_blob']));
-            $p->setThumbnail($p->blobToPic($pic['thumbnail_blob']));
+            $p->picture_blob = $pic['picture_blob'];
+            $p->thumbnail_blob = $pic['thumbnail_blob'];
+            $p->setPicture(self::blobToPic($pic['picture_blob']));
+            $p->setThumbnail(self::blobToPic($pic['thumbnail_blob']));
             $p->setTag($pic['tag']);
             $p->setTitle($pic['title']);
             $p->setId($pic['id']);
@@ -265,7 +264,7 @@ class Picture extends Model {
     
     public function getPictureBlob() {
         
-        return htmlentities($this->picture_blob);
+        return $this->picture_blob;
     }
     
     public function setPictureBlob($picture_blob) {
@@ -273,9 +272,56 @@ class Picture extends Model {
         $this->picture_blob = $picture_blob;
     }
     
+    public function getNewThumb()
+    {
+        if (is_null($this->picture_blob))
+            return FALSE;
+        
+        $image = imagecreatefromstring($this->picture_blob);
+    
+        $tempName = bin2hex(random_bytes(8)) . '.pic';
+        
+        imagepng($image, $tempName);
+        
+        list($width, $height) = getimagesize($tempName);
+    
+        $imgratio=$width/$height;
+    
+        //Ist das Bild höher als breit?
+        if($imgratio>1)
+        {
+            $newwidth = THUMBNAIL_SIZE;
+            $newheight = THUMBNAIL_SIZE/$imgratio;
+        }
+        else
+        {
+            $newheight = THUMBNAIL_SIZE;
+            $newwidth = THUMBNAIL_SIZE*$imgratio;
+        }
+    
+        $thumb = imagecreatetruecolor ($newwidth,$newheight);
+        
+        imagecopyresized($thumb, $image, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
+    
+        unlink($tempName);
+        
+        
+        ob_start();
+        imagepng($thumb);
+        $contents = ob_get_contents();
+        ob_end_clean();
+    
+        imagedestroy($image);
+        
+        $this->thumbnail_blob = $contents;
+        return "<img src='data:image/png;base64,".base64_encode($contents)."''/>";
+    
+        
+    }
+    
     public function getThumbnailBlob() {
         
-        return htmlentities($this->thumbnail_blob);
+        return $this->thumbnail_blob;
     }
     
     public function setThumbnailBlob($thumbnail_blob) {
