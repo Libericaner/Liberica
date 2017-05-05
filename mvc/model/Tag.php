@@ -112,16 +112,16 @@ class Tag extends Model {
             case self::GET_PICTURES_BY_TAG_STATEMENT:
                 $result = self::$database->performQuery('Tag', self::GET_PICTURES_BY_TAG);
                 return Picture::resultToPicturesArray($result);
+            default: return null;
         }
     }
     
     public static function tagsToArray($result) {
+        
         $ts = array();
         foreach ($result as $tag) {
-            $t = new Tag();
-            $t->setId($tag['tag_id']);
-            $t->setName($tag['tag_name']);
             
+            $t = new Tag($tag['tag_id'], $tag['tag_name']);
             $ts[] = $t;
         }
         

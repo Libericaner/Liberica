@@ -5,7 +5,6 @@
  * Time: 13:34
  */
 
-ob_end_clean();
 
 if (is_null($_SESSION[USER]) || empty($_SESSION[USER]))
     return;
@@ -17,8 +16,12 @@ if (is_nan($_GET['id']))
     return;
 
 header('Content-Type: image/png');
-imagepng(imagecreatefromstring(Picture::getPictureById($_GET['id'])->getPictureBlob()));
 
+$p = Picture::getPictureById($_GET['id']);
+$b = $p->getPictureBlob();
 
+ob_end_clean();
+
+imagepng(imagecreatefromstring($b));
 
 exit;

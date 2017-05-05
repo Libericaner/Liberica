@@ -92,7 +92,9 @@ class Picture extends Model {
     public static function getPictureById($id) {
         
         self::setQueryParameter(array('id' => $id));
-        return self::modelSelect(self::GET_PICTURES_BLOB_BY_ID_STATEMENT);
+        $res = self::modelSelect(self::GET_PICTURES_BLOB_BY_ID_STATEMENT);
+        return $res;
+        
     }
     
     public static function getPicturesFromGallery($idGallery) {
@@ -208,6 +210,7 @@ class Picture extends Model {
             $p->setTag($pic['tag']);
             $p->setTitle($pic['title']);
             $p->setId($pic['id']);
+            self::setQueryParameter(['pid' => $pic['id']]);
             $p->setTags(self::modelSelect(self::GET_TAGS_OF_PICTURE_STATEMENT));
             $pics[] = $p;
         }
