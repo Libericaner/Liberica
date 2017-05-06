@@ -35,27 +35,19 @@ function Xregister() {
     if (isset($_POST['user'], $_POST['password']) && !empty($_POST['user']) && !empty($_POST['password']))
     {
         if(filter_var($_POST['user'], FILTER_VALIDATE_EMAIL)) {
-            if(preg_match('/[a-zA-Z0-9]{8,}/', $_POST['password'])) {
-                if(preg_match('/[0-9]/', $_POST['password']) == 1) {
-                    if(preg_match('/[$\_\.\-\+]/', $_POST['password'])) {
-                        if(preg_match('/[a-zA-Z]/', $_POST['password'])) {
-                            if (User::addUser($_POST['user'], $_POST['password'])) {
-                                if (User::verifyUser($_POST['user'], $_POST['password'])) {
-                                    $_SESSION['u'] = $_POST['user'];
-                                    header("Location: ./?view=hidden");
-                                    exit;
-                                }
-                                return 'Es ist ein Fehler aufgetreten';
-                            }
-                            return 'Benutzer existierts bereits';
-                        }
-                        return 'Mindestens ein Gross-/Kleinbuchstabe';
+            if(preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}/', $_POST['password'])) {
+                if (User::addUser($_POST['user'], $_POST['password'])) {
+                    if (User::verifyUser($_POST['user'], $_POST['password'])) {
+                        $_SESSION[USER] = $_POST['user'];
+                        $_SESSION[TOKEN] = bin2hex(random_bytes(32));
+                        header("Location: ./?view=hidden");
+                        exit;
                     }
-                    return 'Mindestens 1 Sonderzeichen';
+                    return 'Es ist ein Fehler aufgetreten';
                 }
-                return 'Mindestens 1 Zahl';
+                return 'Benutzer existierts bereits';
             }
-            return 'Mindestens 8 Zeichen';
+            return 'Passwort ungültig';
         }
         return 'Die E-Mail ist ungültig';
     }
