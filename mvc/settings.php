@@ -13,9 +13,11 @@ define("CSS_PATH", "main.css");
 
 define("DB_HOST", "localhost");
 define("DB_USER", "root");
-define("DB_PASSWORD", "password");
+define("DB_PASSWORD", "gibbiX12345");
 define("DB_NAME", "m151");
 
 // Not used yet
 define("GITHUB_OWNER", "Emaro");
 define("GITHUB_REPOSITORY", "Liberica");
+
+define("PRINT_FOOTER", FALSE);

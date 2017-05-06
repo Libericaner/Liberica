@@ -39,6 +39,9 @@ class Picture extends Model {
     
     const DELETE_GALLERY_BY_ID = "DELETE FROM gallery WHERE id = :id";
     
+    const DELETE_PICTURE_FROM_GALLERY = "DELETE FROM gallery_pic WHERE pic_id = :picture";
+    const DELETE_PICTURE = "DELETE FROM pic WHERE id = :picture";
+    
     public function __construct($galleryId = null, $id = null, $tag = null, $title = null) {
         
         $this->galleryId = $galleryId;
@@ -127,8 +130,9 @@ class Picture extends Model {
     
     public static function deletePictureById($id) {
     
-        self::setQueryParameter(array('id' => $id));
-        self::modelDelete(self::DELETE_GALLERY_BY_ID_STATEMENT);
+        self::setQueryParameter(array('picture' => $id));
+        self::modelDelete(self::DELETE_PICTURE_FROM_GALLERY_STATEMENT);
+        self::modelDelete(self::DELETE_PICTURE_STATEMENT);
     }
     
     public static function picToBlob($nameInFilesArray) {
@@ -270,11 +274,19 @@ class Picture extends Model {
     
     const DELETE_GALLERY_BY_ID_STATEMENT = 1;
     
+    const DELETE_PICTURE_FROM_GALLERY_STATEMENT = 41;
+    const DELETE_PICTURE_STATEMENT = 42;
+    
     private static function modelDelete($whichDeleteStatement) {
         switch ($whichDeleteStatement) {
             case self::DELETE_GALLERY_BY_ID_STATEMENT:
                 self::$database->performQuery('Picture', self::DELETE_GALLERY_BY_ID);
                 return true;
+            case self::DELETE_PICTURE_STATEMENT:
+                self::$database->performQuery('Picture', self::DELETE_PICTURE);
+                return true;
+            case self::DELETE_PICTURE_FROM_GALLERY_STATEMENT:
+                return self::$database->performQuery('Picture', self::DELETE_PICTURE_FROM_GALLERY);
             default:
                 return false;
         }

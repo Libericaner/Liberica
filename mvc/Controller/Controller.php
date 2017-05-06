@@ -8,6 +8,8 @@
 
 const MVC_CONTROLLER = 'mvc/Controller/';
 
+require_once MVC_CONTROLLER . 'library.php';
+
 require_once MVC_CONTROLLER . 'View.php'; // Relative to index.php
 require_once MVC_CONTROLLER . 'file.php';
 

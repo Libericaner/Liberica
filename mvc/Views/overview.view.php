@@ -61,9 +61,10 @@ if (isset($_GET['gallery']))
 <?php
 if (isset($_GET['gallery']))
 {
-    if ($gallery = Gallery::getGalleryById(intval($_GET['gallery'])))
+    if ($gallery = Gallery::getGalleryById(intval($_GET['gallery'])) and in_array($gallery, Gallery::getGalleriesByUserEmail($_SESSION[USER])))
     {
         $galleryName = $gallery->getName();
+        $galleryId = $gallery->getId();
         echo "<h2>Bilder von $galleryName</h2>";
     
         
@@ -82,35 +83,12 @@ if (isset($_GET['gallery']))
         {
             $pictureId = $picture->getId();
             
-            $tags = $picture->getTags();
-            $tagString = "";
-            foreach ($tags as $t) {
-                $tagString .= $t->getName() . ", ";
-            }
-            
-            echo "<div class='sqr'><a href='./?view=picture&id=${pictureId}'>";
+            echo "<div class='sqr'><a href='./?view=overview&gallery=${galleryId}&picture=${pictureId}'>";
             echo "<img src='./?view=picture&id=$pictureId' />";
             //echo random_int(0, 1) ? $picture->getPicture() : $picture->getNewThumb();
             echo "</a>";
-            if (!empty($tagString)) {
-                echo "<p>$tagString</p>";
-                ?>
-                <form action="" method="post">
-                    <input type="text" name="tagName" placeholder="tag to remove">
-                    <input type="hidden" name="pid" value="<?=$picture->getId()?>">
-                    <input type="submit" name="sub[removeTagFromPic]">
-                </form>
-                <br>
-                <?php
-            }
-            ?>
-                <form action="" method="post">
-                    <input type="text" name="tagName" placeholder="tag to add">
-                    <input type="hidden" name="pid" value="<?=$picture->getId()?>">
-                    <input type="submit" name="sub[addTagToPic]">
-                </form>
-                <br>
-            <?php
+     
+            
             echo "</div>";
         }
         echo "<span class='clr'></span></div>";
@@ -134,7 +112,37 @@ if (isset($_GET['picture']) && !empty($_GET['picture']))
     ?>
     <div class="full">
         <?=Picture::getPictureById($_GET['picture'])->getPicture()?>
-        <div class="cmd"><a href="">Löschen</a></div>
+        <div class="cmd">
+            <?php
+            $pictureId = $picture->getId();
+            $tags = $picture->getTags();
+            $tagString = "";
+            foreach ($tags as $t) {
+                $tagString .= $t->getName() . ", ";
+            }
+            
+            if (!empty($tagString)) {
+                echo "<p>$tagString</p>";
+                ?>
+                <form action="" method="post">
+                    <input type="text" name="tagName" placeholder="tag to remove">
+                    <input type="hidden" name="pid" value="<?=$picture->getId()?>">
+                    <input type="submit" name="sub[removeTagFromPic]">
+                </form>
+                <?php
+            }
+            ?>
+            <form action="" method="post">
+                <input type="text" name="tagName" placeholder="tag to add">
+                <input type="hidden" name="pid" value="<?=$picture->getId()?>">
+                <input type="submit" name="sub[addTagToPic]">
+            </form>
+            <form action="" method="post">
+                <input type="hidden" name="pictureId" value="<?=$pictureId?>">
+                <input type="submit" name="sub[deletePicture]" value="Löschen">
+            </form>
+            <a href="./?view=overview&gallery=<?=$galleryId?>">Zurück</a></div>
+       
     </div>
     <?php
 }

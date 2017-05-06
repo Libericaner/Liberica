@@ -7,6 +7,7 @@
  * Each method need the prefix X (for Xecurity). Without it can't be called from a form
  */
 
+include 'mvc/Controller/orders.php';
 
 function XtoHome() {
     
@@ -41,7 +42,7 @@ function Xregister() {
                         if(preg_match('/[a-zA-Z]/', $_POST['password'])) {
                             if (User::addUser($_POST['user'], $_POST['password'])) {
                                 if (User::verifyUser($_POST['user'], $_POST['password'])) {
-                                    $_SESSION['u'] = $_POST['user'];
+                                    $_SESSION[USER] = $_POST['user'];
                                     header("Location: ./?view=hidden");
                                     exit;
                                 }
@@ -80,10 +81,9 @@ function XcreateGallery()
 
 function XuploadImage(){
     
+    
     if (isset($_POST['title'], $_POST['tags'], $_POST['galleryid']) && !empty($_POST['title']) && $_FILES['picture']['name'] != "") {
-    
-        var_dump($_FILES['picture']['error']);
-    
+        
         $file_size = $_FILES['picture']['size'];
         
         $isImage = getimagesize($_FILES["picture"]['tmp_name']);
@@ -91,7 +91,7 @@ function XuploadImage(){
         if ($isImage !== FALSE) {
             if ($file_size < 4000000) {
                 Picture::addPicture($_POST['galleryid'], $_POST['tags'], $_POST['title']);
-                header("Location: ./?view=overview");
+                //header("Location: ./?view=overview");
             }
             return 'Das Bild ist zu gross';
         
@@ -147,4 +147,18 @@ function Xsearch() {
         return "Bitte gebe einen Suchbegriff ein";
     
     return $tags = Tag::searchPictures($_POST['search']);
+}
+
+function XdeletePicture()
+{
+    if (!isset($_POST['pictureId']))
+        return 'Ungültige ID';
+    
+    if (is_nan($_POST['pictureId']))
+        return 'Ungültige ID';
+    
+    Picture::deletePictureById($_POST['pictureId']);
+    
+    $_GET['picture'] = '';
+    return 'Bild erfolgreich gelöscht';
 }
