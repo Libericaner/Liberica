@@ -80,17 +80,17 @@ function XcreateGallery()
 
 function XuploadImage(){
     
-    error_reporting(E_ERROR | E_PARSE);
     if (isset($_POST['title'], $_POST['tags'], $_POST['galleryid']) && !empty($_POST['title']) && $_FILES['picture']['name'] != "") {
     
-        $p = new Picture();
+        var_dump($_FILES['picture']['error']);
     
         $file_size = $_FILES['picture']['size'];
+        
         $isImage = getimagesize($_FILES["picture"]['tmp_name']);
     
         if ($isImage !== FALSE) {
             if ($file_size < 4000000) {
-                $p->addPicture($_POST['galleryid'], $_POST['tags'], $_POST['title']);
+                Picture::addPicture($_POST['galleryid'], $_POST['tags'], $_POST['title']);
                 header("Location: ./?view=overview");
             }
             return 'Das Bild ist zu gross';
@@ -119,4 +119,32 @@ function XdeleteGallery()
     Gallery::deleteGalleryById($gallery->getId());
     
     header("Location: ");
+}
+
+function XremoveTagFromPic() {
+    
+    if (!isset($_POST['pid'], $_POST['tagName']))
+        return "Bitte wähle einen Tag zum entfernen aus";
+    
+    $picture = Picture::getPictureById($_POST['pid']);
+    $tag = Tag::getTagByName($_POST['tagName']);
+    
+    Tag::removePictureTagConstraint($tag->getId(), $picture->getId());
+    header("Location: ");
+}
+
+function XaddTagToPic() {
+    if (!isset($_POST['pid'], $_POST['tagName']))
+        return "Bitte wähle einen Tag zum entfernen aus";
+    
+    $picture = Picture::getPictureById($_POST['pid']);
+    $picture->addTag($_POST['tagName']);
+    header("Location: ");
+}
+
+function Xsearch() {
+    if (!isset($_POST['search']))
+        return "Bitte gebe einen Suchbegriff ein";
+    
+    return $tags = Tag::searchPictures($_POST['search']);
 }

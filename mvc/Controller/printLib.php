@@ -33,6 +33,7 @@ function printMenu() {
             <?=menuItem('register', 'Registrieren', !$whenUserIsSet)?>
             <?=menuItem('hidden', 'Home', $whenUserIsSet)?>
             <?=menuItem('overview', 'Übersicht', $whenUserIsSet)?>
+            <?=menuItem('search', 'Bilder-Suche', $whenUserIsSet || !$whenUserIsSet)?>
             <?=menuItem('logout'.($whenUserIsSet?'&t='.$_SESSION[TOKEN]:''), 'Logout', $whenUserIsSet)?>
         </ul>
         <hr>
