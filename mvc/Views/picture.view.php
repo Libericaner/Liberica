@@ -7,13 +7,13 @@
 
 
 if (is_null($_SESSION[USER]) || empty($_SESSION[USER]))
-    return;
+    return "No USER";
 
 if (!isset($_GET['id']))
-    return;
+    return "No ID";
 
 if (is_nan($_GET['id']))
-    return;
+    return "ID is NAN";
 
 header('Content-Type: image/png');
 

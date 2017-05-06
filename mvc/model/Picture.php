@@ -49,11 +49,27 @@ class Picture extends Model {
     
     public static function addPicture($galleryId, $tag, $title) {
         
+        //Bild hinzufügen
         self::setQueryParameter(array('tag'=>$tag,'title'=>$title,'picture_blob'=>self::picToBlob(PICTURENAME_IN_FILES_ARRAY),'thumbnail_blob'=>self::createThumbnailBlob(PICTURENAME_IN_FILES_ARRAY)));
         self::modelInsert(self::ADD_PICTURE_STATEMENT);
+        
+        //Bild verbinden mit Galerie
         $newPicId = self::modelSelect(self::GET_LAST_CREATED_PICTURE_ID_FOR_GALLERY_CONSTRAINT_STATEMENT);
         self::setQueryParameter(array('galleryId' => $galleryId, 'picId' => $newPicId));
         self::modelInsert(self::ADD_GALLERY_CONSTRAINT_STATEMENT);
+        
+        //Tags mit Bild verbinden
+        $tagArray = explode(";", $tag);
+        var_dump($tagArray);
+        foreach ($tagArray as $tag) {
+            if (Tag::tagExists($tag)) {
+                $t = Tag::getTagByName($tag);
+                Tag::setPictureTagConstraint($t->getId(), $newPicId);
+            } else {
+                $t = Tag::create($tag);
+                Tag::setPictureTagConstraint($t->getId(), $newPicId);
+            }
+        }
     }
     
     public function addTag($tagName) {

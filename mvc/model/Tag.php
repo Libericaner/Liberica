@@ -129,6 +129,7 @@ class Tag extends Model {
     }
     
     const INSERT_TAG_STATEMENT = 1;
+    const ADD_TAG_TO_PICTURE_STATEMENT = 2;
     
     private function modelInsert($whichInsertStatement) {
         
@@ -141,13 +142,13 @@ class Tag extends Model {
         }
     }
     
-    private function modelUpdate(Integer $whichUpdateStatement) {
+    private function modelUpdate($whichUpdateStatement) {
         // TODO: Implement modelUpdate() method.
     }
     
     const REMOVE_CONSTRAINT_WITH_PIC_STATEMENT = 1;
     
-    private function modelDelete(Integer $whichDeleteStatement) {
+    private function modelDelete($whichDeleteStatement) {
     
         switch ($whichDeleteStatement)
         {
