@@ -141,3 +141,10 @@ function XaddTagToPic() {
     $picture->addTag($_POST['tagName']);
     header("Location: ");
 }
+
+function Xsearch() {
+    if (!isset($_POST['search']))
+        return "Bitte gebe einen Suchbegriff ein";
+    
+    return $tags = Tag::searchPictures($_POST['search']);
+}
