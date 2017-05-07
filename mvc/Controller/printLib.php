@@ -118,8 +118,8 @@ function printPicturesFrom(Gallery $gallery, $filter)
         $pictureId = $picture->getId();
         
         echo "<div class='sqr'><a href='./?view=gallery&id=${galleryId}&picture=${pictureId}'>";
-        echo "<img src='./?view=picture&id=$pictureId&thumb' />";
-        
+        echo "<img src='./?view=picture&id=$pictureId&thumb=1' />";
+        //echo $picture->getNewThumb();
         echo "</a>";
         echo "</div>";
     }
@@ -189,7 +189,7 @@ function printSearchResult($search, $arg)
             $pictureId = $picture->getId();
             
             echo "<div class='sqr'><a href='./?view=search". ($search ? '&search='.$search. '&showgallery' : '') ."&picture=${pictureId}'>";
-            echo "<img src='./?view=picture&id=$pictureId&thumb' />";
+            echo "<img src='./?view=picture&id=$pictureId&thumb=1' />";
             
             echo "</a>";
             echo "</div>";

@@ -5,6 +5,7 @@
  * Time: 13:34
  */
 
+ob_clean();
 
 if (is_null($_SESSION[USER]) || empty($_SESSION[USER]))
     return "No USER";
@@ -22,18 +23,22 @@ if (!$p->hasUserAccess($_SESSION[USER]))
     return NULL;
 
 
-if (isset($_GET['thumb']))
-    $b = $p->getThumbnailBlob();
+$b = NULL;
+
+
+if ($_GET['thumb'] == 1)
+{
+    $b = $p->getNewThumb();
+}
 else
     $b = $p->getPictureBlob();
-
 
 header('Content-Type: image/png');
 
 
 $img = imagecreatefromstring($b);
 
-if (!$img)
+if ($img === FALSE)
     $img = imagecreatefromstring($p->getPictureBlob());
 
 ob_end_clean();

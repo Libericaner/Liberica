@@ -152,7 +152,7 @@ function XdeletePicture()
     
     foreach (Gallery::getGalleriesByUserEmail($_SESSION[USER]) as $gallery)
     {
-        if (in_array(Picture::getPictureById($_POST['pictureIdw']), Picture::getPicturesFromGallery($gallery->getId())))
+        if (in_array(Picture::getPictureById($_POST['pictureId']), Picture::getPicturesFromGallery($gallery->getId())))
             $userIsOwner = TRUE;
     }
     

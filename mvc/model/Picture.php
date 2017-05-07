@@ -7,7 +7,7 @@
  */
 
 define("PICTURENAME_IN_FILES_ARRAY", "picture");
-define("THUMBNAIL_SIZE", 512);
+define("THUMBNAIL_SIZE", 324);
 
 class Picture extends Model {
     
@@ -194,13 +194,13 @@ class Picture extends Model {
         imagecopyresized($thumb, $image, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
     
         unlink($tempName);
-    
-    
+        
+        ob_end_clean();
         ob_start();
         imagepng($thumb);
         $contents = ob_get_contents();
         ob_end_clean();
-    
+        ob_start();
         imagedestroy($image);
     
         return $contents;
@@ -401,26 +401,26 @@ class Picture extends Model {
     
         unlink($tempName);
         
-        
+        ob_end_clean();
         ob_start();
         imagepng($thumb);
         $contents = ob_get_contents();
         ob_end_clean();
-    
+        ob_start();
         imagedestroy($image);
         
         $this->thumbnail_blob = $contents;
         self::setQueryParameter(['id' => $this->getId(), 'thumb' => $contents]);
         self::modelUpdate(self::UPDATE_THUMB_STATEMENT);
         
-        return "<img src='data:image/png;base64,".base64_encode($contents)."''/>";
-    
+        return $contents;
         
+        //return "<img src='data:image/png;base64,".base64_encode($contents)."''/>";
     }
     
     public function getThumbnailBlob() {
         
-        if (!$this->thumbnail_blob)
+        if (empty($this->thumbnail_blob))
             $this->getNewThumb();
         return $this->thumbnail_blob;
     }
