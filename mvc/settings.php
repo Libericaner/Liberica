@@ -21,3 +21,5 @@ define("GITHUB_OWNER", "Emaro");
 define("GITHUB_REPOSITORY", "Liberica");
 
 define("PRINT_FOOTER", FALSE);
+
+define("PUBLIC_VIEWS", ['login', 'register']);

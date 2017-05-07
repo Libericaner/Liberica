@@ -40,6 +40,7 @@ class Database {
     
     public function performQuery($model, $queryPattern) {
         
+        
         $stmt = $this->connection->prepare($queryPattern);
         
         $stmt->execute($model::getQueryParameter());

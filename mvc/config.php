@@ -8,6 +8,7 @@
 
 define("USER", "user");
 define("TOKEN", "token");
+define("TOKEN_LEN", 32);
 
 include "mvc/settings.php";
 

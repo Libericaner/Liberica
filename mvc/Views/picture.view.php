@@ -15,13 +15,37 @@ if (!isset($_GET['id']))
 if (is_nan($_GET['id']))
     return "ID is NAN";
 
-header('Content-Type: image/png');
 
 $p = Picture::getPictureById($_GET['id']);
-$b = $p->getPictureBlob();
+
+if (!$p->hasUserAccess($_SESSION[USER]))
+    return NULL;
+
+
+if (isset($_GET['thumb']))
+    $b = $p->getThumbnailBlob();
+else
+    $b = $p->getPictureBlob();
+
+
+header('Content-Type: image/png');
+
+
+$img = imagecreatefromstring($b);
+
+if (!$img)
+    $img = imagecreatefromstring($p->getPictureBlob());
 
 ob_end_clean();
 
-imagepng(imagecreatefromstring($b));
+if (imagepng($img))
+    exit;
 
-exit;
+if (imagejpeg($img))
+    exit;
+
+if (imagegif($img))
+    exit;
+
+if (imagewbmp($img))
+    exit;

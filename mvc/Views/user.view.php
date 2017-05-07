@@ -33,4 +33,16 @@
         <input type="password" name="newPasswordRepeat" placeholder="Passwort wiederholen">
         <input type="submit" name="sub[changePassword]" value="Passwort ändern">
     </p>
+    <p><em>Achtung: Im Moment können vergessene Passwörter nicht zurückgesetzt werden!</em></p>
+</form>
+
+<br>
+
+<form action="" method="post">
+    <h3 class="error">Account löschen</h3>
+    <p class="error"><?=isset($_POST['sub']['changePassword'])?printIfSet($arg):''?></p>
+    <p>
+        <input type="password" name="password" placeholder="Passwort">
+        <input type="submit" name="sub[deleteUser]" value="Account für immer löschen">
+    </p>
 </form>

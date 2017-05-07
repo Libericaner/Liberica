@@ -63,8 +63,8 @@ class Picture extends Model {
         
         //Tags mit Bild verbinden
         $tagArray = explode(";", $tag);
-        var_dump($tagArray);
         foreach ($tagArray as $tag) {
+            $tag = trim($tag);
             if (Tag::tagExists($tag)) {
                 $t = Tag::getTagByName($tag);
                 Tag::setPictureTagConstraint($t->getId(), $newPicId);
@@ -96,6 +96,17 @@ class Picture extends Model {
         }
     }
     
+    public function hasUserAccess($email)
+    {
+        if (!$this->getId())
+            return NULL;
+        self::setQueryParameter(['pid' => $this->getId()]);
+        $owner = self::modelSelect(self::HAS_USER_ACCESS_STATEMENT);
+        if ($owner)
+            return $owner == $email;
+        return false;
+    }
+    
     public static function updatePicture($id, $tag = null, $title = null) {
         
         if (isset($tag)) {
@@ -108,7 +119,16 @@ class Picture extends Model {
         }
     }
     
-    public static function getPictureById($id) {
+    public function getGallery() : Gallery
+    {
+        if (!$this->getId())
+            return NULL;
+        
+        self::setQueryParameter(['pid' => $this->getId()]);
+        return self::modelSelect(self::GET_GALLERY_STATEMENT);
+    }
+    
+    public static function getPictureById($id) : Picture{
         
         self::setQueryParameter(array('id' => $id));
         $res = self::modelSelect(self::GET_PICTURES_BLOB_BY_ID_STATEMENT);
@@ -191,12 +211,15 @@ class Picture extends Model {
     const GET_X_PICTURES_BLOB_STATEMENT = 3;
     const GET_LAST_CREATED_PICTURE_ID_FOR_GALLERY_CONSTRAINT_STATEMENT = 4;
     const GET_TAGS_OF_PICTURE_STATEMENT = 5;
+    const HAS_USER_ACCESS_STATEMENT = 6;
+    const GET_GALLERY_STATEMENT = 7;
     
     private static function modelSelect($whichSelectStatement) {
         switch($whichSelectStatement) {
             case self::GET_PICTURES_BLOB_BY_ID_STATEMENT:
                 $result = self::$database->performQuery('Picture', self::GET_PICTURE_BLOB_BY_ID);
-                
+                if (count($result) == 0)
+                    return NULL;
                 return self::resultToPicturesArray($result)[0];
             case self::GET_PICTURES_BLOB_BY_GALLERY_ID_STATEMENT:
                 $result = self::$database->performQuery('Picture', self::GET_PICTURES_BLOB_BY_GALLERY_ID);
@@ -214,6 +237,16 @@ class Picture extends Model {
                 $result = self::$database->performQuery('Picture', self::GET_TAGS_OF_PICTURE);
                 
                 return Tag::tagsToArray($result);
+            case self::HAS_USER_ACCESS_STATEMENT:
+                $result = self::$database->performQuery('Picture', 'SELECT email FROM user AS u JOIN user_gallery AS ug ON u.id = ug.user_id JOIN gallery_pic AS gp ON ug.gallery_id = gp.gallery_id WHERE gp.pic_id = :pid');
+                if (!$result)
+                    return FALSE;
+                return $result[0]['email'];
+            case self::GET_GALLERY_STATEMENT:
+                $result = self::$database->performQuery('Picture', 'SELECT  G.name, G.description, G.id FROM gallery AS g JOIN gallery_pic ON g.id = gallery_pic.gallery_id WHERE gallery_pic.pic_id = :pid');
+                if (count($result) == 0)
+                    return NULL;
+                return Gallery::resultGalleryArray($result)[0];
             default:
                 return NULL;
         }
@@ -258,6 +291,7 @@ class Picture extends Model {
     
     const UPDATE_TAG_STATEMENT = 1;
     const UPDATE_TITLE_STATEMENT = 2;
+    const UPDATE_THUMB_STATEMENT = 3;
     
     private static function modelUpdate($whichUpdateStatement) {
         switch($whichUpdateStatement) {
@@ -267,6 +301,8 @@ class Picture extends Model {
             case self::UPDATE_TITLE_STATEMENT:
                 self::$database->performQuery('Picture', self::UPDATE_TITLE);
                 return true;
+            case self::UPDATE_THUMB_STATEMENT:
+                self::$database->performQuery('Picture', 'UPDATE pic SET thumbnail_blob = :thumb WHERE id = :id');
             default:
                 return false;
         }
@@ -374,6 +410,9 @@ class Picture extends Model {
         imagedestroy($image);
         
         $this->thumbnail_blob = $contents;
+        self::setQueryParameter(['id' => $this->getId(), 'thumb' => $contents]);
+        self::modelUpdate(self::UPDATE_THUMB_STATEMENT);
+        
         return "<img src='data:image/png;base64,".base64_encode($contents)."''/>";
     
         
@@ -381,6 +420,8 @@ class Picture extends Model {
     
     public function getThumbnailBlob() {
         
+        if (!$this->thumbnail_blob)
+            $this->getNewThumb();
         return $this->thumbnail_blob;
     }
     

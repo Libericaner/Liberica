@@ -30,11 +30,14 @@ function passwordIsValid($password)
 
 function redirectGuest()
 {
-    if (empty($_SESSION[USER]))
-    {
-        header("Location: ./?view=login");
-        exit;
-    }
+    if (empty($_SESSION[USER]) || !User::getUserByEmail($_SESSION[USER]))
+        headerLocationView('login');
+}
+
+function redirectUser()
+{
+    if (isset($_SESSION[USER]) && User::getUserByEmail($_SESSION[USER]))
+        headerLocationView('home');
 }
 
 function someoneEmpty ()
@@ -53,4 +56,10 @@ function someoneEmpty ()
 function isInvalidEmail($email)
 {
     return !filter_var($email, FILTER_VALIDATE_EMAIL);
+}
+
+function headerLocationView($view)
+{
+    header("Location: ./?view=$view");
+    exit;
 }

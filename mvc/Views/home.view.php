@@ -13,3 +13,6 @@
 
 <p>Sehen Sie sich Ihre Galerien an:
   <br><?=viewLink('galleries', 'Meine Galerien')?></p>
+
+<p>Durchsuchen Sie Ihre Bilder:
+    <br><?=viewLink('search', 'Suche')?></p>

@@ -17,7 +17,7 @@ if (isset($_SESSION[USER]))
 <p class="error"><?=printIfSet($arg)?>
 
 <form action="./?view=register" method="post">
-    <input type="text" name="user" placeholder="Username">
+    <input type="text" name="user" placeholder="Username" value="<?=isset($_POST['user'])?$_POST['user']:''?>">
     <input type="password" name="password" placeholder="Passwort">
     <input type="submit" name="sub[register]">
 </form>
