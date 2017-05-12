@@ -3,6 +3,8 @@
  * User: Emaro
  * Date: 03.03.2017
  * Time: 10:47
+ *
+ * This is the only file the user calls. It instantiates a Controller
  */
 
 

@@ -1,5 +1,6 @@
 <?php
 
+// TODO: consider moveing session_start() to a better place (first: find a better place)
 session_start();
 
 /**
@@ -27,6 +28,7 @@ class View {
     
     public function show($arg) {
         
+        // Needed?
         $isLoggedIn = isset($_SESSION[USER]);
         
         ob_start();

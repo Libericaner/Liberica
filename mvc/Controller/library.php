@@ -3,6 +3,9 @@
  * User: Emaro
  * Date: 2017-05-06
  * Time: 20:16
+ *
+ * A collection of useful functions
+ * TODO: Separate framework functions from application functions
  */
 
 function passwordIsValid($password)
