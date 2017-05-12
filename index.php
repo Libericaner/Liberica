@@ -28,8 +28,6 @@ require_once CONTROLLER . 'orders.php';
 require_once CONTROLLER . 'library.php';
 require_once CONTROLLER . 'printLib.php';
 
-require_once CONTROLLER . 'file.php';
-
 
 const DATABASE = MVC . 'Database/';
 
