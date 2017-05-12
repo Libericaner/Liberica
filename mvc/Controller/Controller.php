@@ -20,7 +20,12 @@ require_once MVC_CONTROLLER . 'commands.php';
 
 class Controller {
     
-    public function __construct($uViewId) {
+    public function __construct() {
+    
+        $uViewId = DEFAULT_PAGE;
+    
+        if (isset($_GET['view']))
+            $uViewId = $_GET['view'];
         
         if (in_array($uViewId, PUBLIC_VIEWS))
             redirectUser();
