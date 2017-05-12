@@ -51,5 +51,7 @@ class Controller {
             }
             return 'Nicht erkannt';
         }
+        
+        return 'Es ist ein Fehler aufgetreten';
     }
 }
