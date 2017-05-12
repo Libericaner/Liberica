@@ -20,8 +20,8 @@ class Gallery extends Model {
     const ADD_NEW_GALLERY = "INSERT INTO gallery (name, description) VALUES (:galleryName, :galleryDescription)";
     const ADD_USER_CONSTRAINT = "INSERT INTO user_gallery (user_id, gallery_id) VALUES (:uid, :gid)";
     
-    const UPDATE_GALLERY_NAME = "UPDATE gallery SET name = :galleryName";
-    const UPDATE_GALLERY_DESCRIPTION = "UPDATE gallery SET description = :galleryDescription";
+    const UPDATE_GALLERY_NAME = "UPDATE gallery SET name = :galleryName WHERE id = :id";
+    const UPDATE_GALLERY_DESCRIPTION = "UPDATE gallery SET description = :galleryDescription WHERE id = :id";
     
     const DELETE_GALLERY_NAME    = "DELETE FROM gallery WHERE id = :id";
     
@@ -45,7 +45,7 @@ class Gallery extends Model {
         self::modelInsert(self::ADD_USER_CONSTRAINT_STATEMENT);
     }
     
-    public static function getGalleryById($id) {
+    public static function getGalleryById($id) : Gallery {
         
         self::setQueryParameter(array('idGallery' => $id));
         return self::modelSelect(self::GET_GALLERY_BY_ID_STATEMENT);
@@ -75,21 +75,26 @@ class Gallery extends Model {
         return self::modelDelete(self::DELETE_GALLERY_BY_ID_STATEMENT);
     }
     
-    public static function updateGallery($name = NULL, $description = NULL) {
+    public function updateName($name)
+    {
+        if (is_nan($this->getId()) || empty($name))
+            return FALSE;
         
-        $itWorked = false;
+        self::setQueryParameter(['galleryName' => $name, 'id' => $this->getId()]);
+        self::modelUpdate(self::UPDATE_NAME_STATEMENT);
         
-        if (!($name == NULL)) {
-            self::setQueryParameter(array('galleryName' => $name));
-            self::modelUpdate(self::UPDATE_NAME_STATEMENT);
-            $itWorked = true;
-        }
-        if (!($description == NULL)) {
-            self::setQueryParameter(array('galleryDescription' => $description));
-            self::modelUpdate(self::UPDATE_DESCRIPTION_STATEMENT);
-            $itWorked = true;
-        }
-        return $itWorked;
+        return TRUE;
+    }
+    
+    public function updateDescription($desc)
+    {
+        if (is_nan($this->getId()))
+            return FALSE;
+        
+        self::setQueryParameter(['galleryDescription' => $desc, 'id' => $this->getId()]);
+        self::modelUpdate(self::UPDATE_DESCRIPTION_STATEMENT);
+        
+        return TRUE;
     }
     
     const GET_GALLERY_BY_ID_STATEMENT = 1;
@@ -134,7 +139,7 @@ class Gallery extends Model {
         }
     }
     
-    private static function resultGalleryArray($result) {
+    public static function resultGalleryArray($result) {
         $arrGalleries = array();
     
         foreach ($result as $gallery) {

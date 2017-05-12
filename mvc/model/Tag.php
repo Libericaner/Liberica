@@ -14,7 +14,18 @@ class Tag extends Model {
     const GET_TAG_BY_NAME = "SELECT tag_id, tag_name FROM tag WHERE tag_name = :name";
     const GET_ALL = "SELECT * FROM tag";
     const GET_TAG_EXISTS = "SELECT * FROM tag WHERE tag_name = :tag_name;";
-    const GET_PICTURES_BY_TAG = "SELECT P.id, P.tag, P.title, P.picture_blob, P.thumbnail_blob FROM tag AS T INNER JOIN tag_pic AS TP ON T.tag_id = TP.tag_id INNER JOIN pic AS P ON P.id = TP.pic_id WHERE T.tag_id = :tid;";
+    const GET_PICTURES_BY_TAG = "SELECT P.id, P.tag, P.title, P.picture_blob, P.thumbnail_blob FROM tag AS T
+        INNER JOIN tag_pic AS TP ON T.tag_id = TP.tag_id
+        INNER JOIN pic AS P ON P.id = TP.pic_id
+        JOIN gallery_pic AS gp ON P.id = gp.pic_id
+        JOIN user_gallery AS ug ON gp.gallery_id = ug.gallery_id
+        JOIN user AS u ON ug.user_id = u.id
+        WHERE T.tag_id = :tid AND u.email = :email;";
+    const GET_PICTURES_BY_TAG_AND_GALLERY = "SELECT P.id, P.tag, P.title, P.picture_blob, P.thumbnail_blob FROM tag AS T
+        INNER JOIN tag_pic AS TP ON T.tag_id = TP.tag_id
+        INNER JOIN pic AS P ON P.id = TP.pic_id
+        JOIN gallery_pic AS gp ON P.id = gp.pic_id
+        WHERE T.tag_id = :tid AND gp.gallery_id = :gid;";
     
     const INSERT_TAG = "INSERT INTO tag (tag_name) VALUES (:name)";
     const ADD_TAG_TO_PICTURE = "INSERT INTO tag_pic (tag_id, pic_id) VALUES (:tid, :pid)";
@@ -40,13 +51,25 @@ class Tag extends Model {
         return self::getTagByName($name);
     }
     
-    public static function searchPictures($tagName) {
+    public static function searchPicturesByUser($tagName, $email) {
         
         if (self::tagExists($tagName)) {
-    
+            
             $t = self::getTagByName($tagName);
-            self::setQueryParameter(['tid' => $t->getId()]);
+            self::setQueryParameter(['tid' => $t->getId(), 'email' => $email]);
             return self::modelSelect(self::GET_PICTURES_BY_TAG_STATEMENT);
+        } else {
+            return NULL;
+        }
+    }
+    
+    public static function searchPicturesByGallery($tagName, Gallery $gallery) {
+        
+        if (self::tagExists($tagName)) {
+            
+            $t = self::getTagByName($tagName);
+            self::setQueryParameter(['tid' => $t->getId(), 'gid' => $gallery->getId()]);
+            return self::modelSelect(self::GET_PICTURES_BY_TAG_AND_GALLERY_STATEMENT);
         } else {
             return NULL;
         }
@@ -92,6 +115,7 @@ class Tag extends Model {
     const GET_ALL_STATEMENT = 3;
     const GET_TAG_EXISTS_STATEMENT = 4;
     const GET_PICTURES_BY_TAG_STATEMENT = 5;
+    const GET_PICTURES_BY_TAG_AND_GALLERY_STATEMENT = 6;
     
     private function modelSelect($whichSelectStatement) {
         
@@ -111,6 +135,9 @@ class Tag extends Model {
                 return !empty($result);
             case self::GET_PICTURES_BY_TAG_STATEMENT:
                 $result = self::$database->performQuery('Tag', self::GET_PICTURES_BY_TAG);
+                return Picture::resultToPicturesArray($result);
+            case self::GET_PICTURES_BY_TAG_AND_GALLERY_STATEMENT:
+                $result = self::$database->performQuery('Tag', self::GET_PICTURES_BY_TAG_AND_GALLERY);
                 return Picture::resultToPicturesArray($result);
             default: return null;
         }

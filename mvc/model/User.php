@@ -58,6 +58,7 @@ class User extends Model {
             self::$fails = self::VERIFICATION_FAIL;
             return FALSE;
         }
+        return FALSE;
     }
     
     public static function getUserByEmail(String $email) {
@@ -99,12 +100,10 @@ class User extends Model {
     public function updateUser($id, $email = NULL, $password = NULL) {
         
         if (!($email == NULL) && !self::userExist($email)) {
-            self::setQueryParameter(array('id' => $id, 'username' => $email));
+            self::setQueryParameter(array('id' => $id, 'email' => $email));
             self::modelUpdate(self::UPDATE_USERNAME_STATEMENT);
         }
-        else {
-            $_GET['This username exists already'];
-        }
+        
         if (!($password == NULL)) {
             self::setQueryParameter(array('id' => $id, 'password' => $password));
             self::modelUpdate(self::UPDATE_PASSWORD_STATEMENT);

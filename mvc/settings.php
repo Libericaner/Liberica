@@ -13,9 +13,13 @@ define("CSS_PATH", "main.css");
 
 define("DB_HOST", "localhost");
 define("DB_USER", "root");
-define("DB_PASSWORD", "password");
-define("DB_NAME", "m151");
+define("DB_PASSWORD", "gibbiX12345");
+define("DB_NAME", "bilderdb_4d_albrecht");
 
 // Not used yet
 define("GITHUB_OWNER", "Emaro");
 define("GITHUB_REPOSITORY", "Liberica");
+
+define("PRINT_FOOTER", FALSE);
+
+define("PUBLIC_VIEWS", ['login', 'register']);

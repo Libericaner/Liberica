@@ -8,6 +8,8 @@
 
 const MVC_CONTROLLER = 'mvc/Controller/';
 
+require_once MVC_CONTROLLER . 'library.php';
+
 require_once MVC_CONTROLLER . 'View.php'; // Relative to index.php
 require_once MVC_CONTROLLER . 'file.php';
 
@@ -20,11 +22,15 @@ class Controller {
     
     public function __construct($uViewId) {
         
+        if (in_array($uViewId, PUBLIC_VIEWS))
+            redirectUser();
+        else
+            redirectGuest();
+        
         if (!isset($_POST['sub']))
             $u = '';
         else
             $u = $this->run($_POST['sub']);
-        
         
         $view = new View($uViewId);
         $view->show($u);

@@ -7,7 +7,7 @@
  */
 
 define("PICTURENAME_IN_FILES_ARRAY", "picture");
-define("THUMBNAIL_SIZE", 512);
+define("THUMBNAIL_SIZE", 324);
 
 class Picture extends Model {
     
@@ -39,6 +39,9 @@ class Picture extends Model {
     
     const DELETE_GALLERY_BY_ID = "DELETE FROM gallery WHERE id = :id";
     
+    const DELETE_PICTURE_FROM_GALLERY = "DELETE FROM gallery_pic WHERE pic_id = :picture";
+    const DELETE_PICTURE = "DELETE FROM pic WHERE id = :picture";
+    
     public function __construct($galleryId = null, $id = null, $tag = null, $title = null) {
         
         $this->galleryId = $galleryId;
@@ -60,8 +63,8 @@ class Picture extends Model {
         
         //Tags mit Bild verbinden
         $tagArray = explode(";", $tag);
-        var_dump($tagArray);
         foreach ($tagArray as $tag) {
+            $tag = trim($tag);
             if (Tag::tagExists($tag)) {
                 $t = Tag::getTagByName($tag);
                 Tag::setPictureTagConstraint($t->getId(), $newPicId);
@@ -93,6 +96,17 @@ class Picture extends Model {
         }
     }
     
+    public function hasUserAccess($email)
+    {
+        if (!$this->getId())
+            return NULL;
+        self::setQueryParameter(['pid' => $this->getId()]);
+        $owner = self::modelSelect(self::HAS_USER_ACCESS_STATEMENT);
+        if ($owner)
+            return $owner == $email;
+        return false;
+    }
+    
     public static function updatePicture($id, $tag = null, $title = null) {
         
         if (isset($tag)) {
@@ -105,7 +119,16 @@ class Picture extends Model {
         }
     }
     
-    public static function getPictureById($id) {
+    public function getGallery() : Gallery
+    {
+        if (!$this->getId())
+            return NULL;
+        
+        self::setQueryParameter(['pid' => $this->getId()]);
+        return self::modelSelect(self::GET_GALLERY_STATEMENT);
+    }
+    
+    public static function getPictureById($id) : Picture{
         
         self::setQueryParameter(array('id' => $id));
         $res = self::modelSelect(self::GET_PICTURES_BLOB_BY_ID_STATEMENT);
@@ -127,8 +150,9 @@ class Picture extends Model {
     
     public static function deletePictureById($id) {
     
-        self::setQueryParameter(array('id' => $id));
-        self::modelDelete(self::DELETE_GALLERY_BY_ID_STATEMENT);
+        self::setQueryParameter(array('picture' => $id));
+        self::modelDelete(self::DELETE_PICTURE_FROM_GALLERY_STATEMENT);
+        self::modelDelete(self::DELETE_PICTURE_STATEMENT);
     }
     
     public static function picToBlob($nameInFilesArray) {
@@ -170,13 +194,13 @@ class Picture extends Model {
         imagecopyresized($thumb, $image, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
     
         unlink($tempName);
-    
-    
+        
+        ob_end_clean();
         ob_start();
         imagepng($thumb);
         $contents = ob_get_contents();
         ob_end_clean();
-    
+        ob_start();
         imagedestroy($image);
     
         return $contents;
@@ -187,12 +211,15 @@ class Picture extends Model {
     const GET_X_PICTURES_BLOB_STATEMENT = 3;
     const GET_LAST_CREATED_PICTURE_ID_FOR_GALLERY_CONSTRAINT_STATEMENT = 4;
     const GET_TAGS_OF_PICTURE_STATEMENT = 5;
+    const HAS_USER_ACCESS_STATEMENT = 6;
+    const GET_GALLERY_STATEMENT = 7;
     
     private static function modelSelect($whichSelectStatement) {
         switch($whichSelectStatement) {
             case self::GET_PICTURES_BLOB_BY_ID_STATEMENT:
                 $result = self::$database->performQuery('Picture', self::GET_PICTURE_BLOB_BY_ID);
-                
+                if (count($result) == 0)
+                    return NULL;
                 return self::resultToPicturesArray($result)[0];
             case self::GET_PICTURES_BLOB_BY_GALLERY_ID_STATEMENT:
                 $result = self::$database->performQuery('Picture', self::GET_PICTURES_BLOB_BY_GALLERY_ID);
@@ -210,6 +237,16 @@ class Picture extends Model {
                 $result = self::$database->performQuery('Picture', self::GET_TAGS_OF_PICTURE);
                 
                 return Tag::tagsToArray($result);
+            case self::HAS_USER_ACCESS_STATEMENT:
+                $result = self::$database->performQuery('Picture', 'SELECT email FROM user AS u JOIN user_gallery AS ug ON u.id = ug.user_id JOIN gallery_pic AS gp ON ug.gallery_id = gp.gallery_id WHERE gp.pic_id = :pid');
+                if (!$result)
+                    return FALSE;
+                return $result[0]['email'];
+            case self::GET_GALLERY_STATEMENT:
+                $result = self::$database->performQuery('Picture', 'SELECT  G.name, G.description, G.id FROM gallery AS g JOIN gallery_pic ON g.id = gallery_pic.gallery_id WHERE gallery_pic.pic_id = :pid');
+                if (count($result) == 0)
+                    return NULL;
+                return Gallery::resultGalleryArray($result)[0];
             default:
                 return NULL;
         }
@@ -254,6 +291,7 @@ class Picture extends Model {
     
     const UPDATE_TAG_STATEMENT = 1;
     const UPDATE_TITLE_STATEMENT = 2;
+    const UPDATE_THUMB_STATEMENT = 3;
     
     private static function modelUpdate($whichUpdateStatement) {
         switch($whichUpdateStatement) {
@@ -263,6 +301,8 @@ class Picture extends Model {
             case self::UPDATE_TITLE_STATEMENT:
                 self::$database->performQuery('Picture', self::UPDATE_TITLE);
                 return true;
+            case self::UPDATE_THUMB_STATEMENT:
+                self::$database->performQuery('Picture', 'UPDATE pic SET thumbnail_blob = :thumb WHERE id = :id');
             default:
                 return false;
         }
@@ -270,11 +310,19 @@ class Picture extends Model {
     
     const DELETE_GALLERY_BY_ID_STATEMENT = 1;
     
+    const DELETE_PICTURE_FROM_GALLERY_STATEMENT = 41;
+    const DELETE_PICTURE_STATEMENT = 42;
+    
     private static function modelDelete($whichDeleteStatement) {
         switch ($whichDeleteStatement) {
             case self::DELETE_GALLERY_BY_ID_STATEMENT:
                 self::$database->performQuery('Picture', self::DELETE_GALLERY_BY_ID);
                 return true;
+            case self::DELETE_PICTURE_STATEMENT:
+                self::$database->performQuery('Picture', self::DELETE_PICTURE);
+                return true;
+            case self::DELETE_PICTURE_FROM_GALLERY_STATEMENT:
+                return self::$database->performQuery('Picture', self::DELETE_PICTURE_FROM_GALLERY);
             default:
                 return false;
         }
@@ -353,22 +401,27 @@ class Picture extends Model {
     
         unlink($tempName);
         
-        
+        ob_end_clean();
         ob_start();
         imagepng($thumb);
         $contents = ob_get_contents();
         ob_end_clean();
-    
+        ob_start();
         imagedestroy($image);
         
         $this->thumbnail_blob = $contents;
-        return "<img src='data:image/png;base64,".base64_encode($contents)."''/>";
-    
+        self::setQueryParameter(['id' => $this->getId(), 'thumb' => $contents]);
+        self::modelUpdate(self::UPDATE_THUMB_STATEMENT);
         
+        return $contents;
+        
+        //return "<img src='data:image/png;base64,".base64_encode($contents)."''/>";
     }
     
     public function getThumbnailBlob() {
         
+        if (empty($this->thumbnail_blob))
+            $this->getNewThumb();
         return $this->thumbnail_blob;
     }
     
