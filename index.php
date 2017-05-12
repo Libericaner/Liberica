@@ -5,7 +5,44 @@
  * Time: 10:47
  */
 
-require_once "mvc/config.php";
-require_once "mvc/Controller/Controller.php";
 
 new Controller();
+
+
+const MVC = 'mvc/';
+
+require_once MVC . 'config.php';
+require_once MVC . 'settings.php';
+
+
+const CONTROLLER = MVC . 'Controller/';
+
+require_once CONTROLLER . 'Controller.php';
+require_once CONTROLLER . 'View.php';
+
+require_once CONTROLLER . 'commands.php';
+require_once CONTROLLER . 'orders.php';
+
+require_once CONTROLLER . 'library.php';
+require_once CONTROLLER . 'printLib.php';
+
+require_once CONTROLLER . 'file.php';
+
+
+const DATABASE = MVC . 'Database/';
+
+require_once DATABASE . 'Database.php';
+require_once DATABASE . 'DBConnection.php';
+
+require_once 'mvc/Database/DBConnection.php';
+
+
+// IMPORTANT: APPLICATION SPECIFIC
+
+const MODEL = MVC . 'Model/';
+
+require_once MODEL . 'Gallery.php';
+require_once MODEL . 'Model.php';
+require_once MODEL . 'Picture.php';
+require_once MODEL . 'Tag.php';
+require_once MODEL . 'User.php';

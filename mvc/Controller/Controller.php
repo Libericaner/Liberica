@@ -6,16 +6,7 @@
  * Time: 10:53
  */
 
-const MVC_CONTROLLER = 'mvc/Controller/';
 
-require_once MVC_CONTROLLER . 'library.php';
-
-require_once MVC_CONTROLLER . 'View.php'; // Relative to index.php
-require_once MVC_CONTROLLER . 'file.php';
-
-require_once 'mvc/Database/DBConnection.php';
-
-require_once MVC_CONTROLLER . 'commands.php';
 
 
 class Controller {

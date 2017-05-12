@@ -8,8 +8,6 @@ session_start();
  * Time: 11:19
  */
 
-require_once "mvc/Controller/printLib.php";
-
 class View {
     
     const SUFFIX   = '.view.php';

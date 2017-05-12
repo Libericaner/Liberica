@@ -7,8 +7,6 @@
  * Each method need the prefix X (for Xecurity). Without it can't be called from a form
  */
 
-include 'mvc/Controller/orders.php';
-
 
 function Xlogin() {
     
