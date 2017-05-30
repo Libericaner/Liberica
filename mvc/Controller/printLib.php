@@ -3,6 +3,9 @@
  * User: Emaro
  * Date: 2017-03-10
  * Time: 13:55
+ *
+ * Print functions to use in the views
+ * TODO: Separate framework functions from application functions
  */
 
 

@@ -4,10 +4,9 @@
  * Date: 2017-03-31
  * Time: 10:23
  *
+ * Callable actions collection one
  * Each method need the prefix X (for Xecurity). Without it can't be called from a form
  */
-
-include 'mvc/Controller/orders.php';
 
 
 function Xlogin() {

@@ -1,5 +1,6 @@
 <?php
 
+// TODO: consider moveing session_start() to a better place (first: find a better place)
 session_start();
 
 /**
@@ -7,8 +8,6 @@ session_start();
  * Date: 2017-03-10
  * Time: 11:19
  */
-
-require_once "mvc/Controller/printLib.php";
 
 class View {
     
@@ -29,6 +28,7 @@ class View {
     
     public function show($arg) {
         
+        // Needed?
         $isLoggedIn = isset($_SESSION[USER]);
         
         ob_start();

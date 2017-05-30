@@ -3,6 +3,9 @@
  * User: Emaro
  * Date: 2017-05-06
  * Time: 19:33
+ *
+ * Callable actions collection two
+ * Each method need the prefix X (for Xecurity). Without it can't be called from a form
  */
 
 // USER
