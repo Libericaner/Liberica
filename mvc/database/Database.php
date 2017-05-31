@@ -38,12 +38,9 @@ class Database {
         }
     }
     
-    public function performQuery($model, $queryPattern) {
-        
-        
-        $stmt = $this->connection->prepare($queryPattern);
-        
-        $stmt->execute($model::getQueryParameter());
+    public function performQuery($preparedStatement) {
+        $stmt = $this->connection->prepare($preparedStatement);
+        $stmt->execute(Model::getQueryParameter());
         
         $result = array();
         
