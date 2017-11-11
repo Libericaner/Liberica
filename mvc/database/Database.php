@@ -37,17 +37,4 @@ class Database {
             exit;
         }
     }
-    
-    public function performQuery($preparedStatement) {
-        $stmt = $this->connection->prepare($preparedStatement);
-        $stmt->execute(Model::getQueryParameter());
-        
-        $result = array();
-        
-        while ($record = $stmt->fetch()) {
-            $result[] = $record;
-        }
-        
-        return $result;
-    }
 }

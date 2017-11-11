@@ -5,10 +5,6 @@
  * Time: 12:56
  */
 
-require_once("Controller.php");
-require_once("../DTO/Tag.php");
-require_once("../Queries/TagQueries.php");
-
 class TagController extends Controller
 {
     public static function create($name)

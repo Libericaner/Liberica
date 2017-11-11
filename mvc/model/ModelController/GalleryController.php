@@ -5,10 +5,6 @@
  * Time: 12:56
  */
 
-require_once("Controller.php");
-require_once("../DTO/Gallery.php");
-require_once("../Queries/GalleryQueries.php");
-
 class GalleryController extends Controller
 {
     public static function addGallery($userId, $name, $description) {

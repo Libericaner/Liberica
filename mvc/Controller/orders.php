@@ -1,6 +1,6 @@
 <?php
 /**
- * User: Emaro
+ * UserController: Emaro
  * Date: 2017-05-06
  * Time: 19:33
  *
@@ -20,17 +20,17 @@ function XchangeEmail()
     if (isInvalidEmail($_POST['email']))
         return 'Gibb eine gültige E-Mail-Adresse ein';
     
-    if (!User::verifyUser($_SESSION[USER], $_POST['password']))
+    if (!UserController::verifyUser($_SESSION[USER], $_POST['password']))
         return 'Ungültiges Passwort';
     
-    if (User::getUserByEmail($_POST['email']))
+    if (UserController::getUserByEmail($_POST['email']))
         return "Die E-Mail-Adresse " . htmlentities($_POST['email']) . " wird bereits von einem anderen Benutzer verwendet";
     
-    $currentUser = User::getUserByEmail($_SESSION[USER]);
+    $currentUser = UserController::getUserByEmail($_SESSION[USER]);
     
     $currentUser->updateUser($currentUser->getIdUser(), $_POST['email']);
     
-    if ($currentUser->getIdUser() !== User::getUserByEmail($_POST['email'])->getIdUser())
+    if ($currentUser->getIdUser() !== UserController::getUserByEmail($_POST['email'])->getIdUser())
         return 'Ein Fehler ist aufgetreten';
     
     $_SESSION[USER] = $_POST['email'];
@@ -54,15 +54,15 @@ function XchangePassword()
     if ($isValid !== TRUE)
         return $isValid;
     
-    if (!User::verifyUser($_SESSION[USER], $_POST['oldPassword']))
+    if (!UserController::verifyUser($_SESSION[USER], $_POST['oldPassword']))
         return 'Das aktuelle Passwort ist ungültig';
     
-    $currentUser = User::getUserByEmail($_SESSION[USER]);
+    $currentUser = UserController::getUserByEmail($_SESSION[USER]);
     
     // Attention: updateUser needs a hashed password
     $currentUser->updateUser($currentUser->getIdUser(), NULL, password_hash($_POST['newPassword'], PASSWORD_DEFAULT));
     
-    if (!User::verifyUser($_SESSION[USER], $_POST['newPassword']))
+    if (!UserController::verifyUser($_SESSION[USER], $_POST['newPassword']))
         return 'Ein Fehler ist aufgetreten';
     
     headerLocationView('user');
@@ -79,7 +79,7 @@ function Xregister()
     if (isInvalidEmail($_POST['user']))
         return 'Gibb eine gültige E-Mail-Adresse ein';
     
-    if (User::getUserByEmail($_POST['user']))
+    if (UserController::getUserByEmail($_POST['user']))
         return "Die E-Mail-Adresse " . htmlentities($_POST['user']) . " wird bereits von einem anderen Benutzer verwendet";
     
     $isValid = passwordIsValid($_POST['password']);
@@ -87,9 +87,9 @@ function Xregister()
     if ($isValid !== TRUE)
         return $isValid;
     
-    User::addUser($_POST['user'], $_POST['password']); // Raw pw expected
+    UserController::addUser($_POST['user'], $_POST['password']); // Raw pw expected
     
-    if (!User::verifyUser($_POST['user'], $_POST['password']))
+    if (!UserController::verifyUser($_POST['user'], $_POST['password']))
         return 'Ein Fehler ist aufgetreten';
     
     $_SESSION[USER] = $_POST['user'];
@@ -106,12 +106,12 @@ function XdeleteUser()
     if (empty($_POST['password']))
         return 'Du musst dein Passwort eingeben, um deinen Account zu löschen';
     
-    if (!User::verifyUser($_SESSION[USER], $_POST['password']))
+    if (!UserController::verifyUser($_SESSION[USER], $_POST['password']))
         return 'Das eingegebene Passwort ist ungültig';
     
-    $currentUser = User::getUserByEmail($_SESSION[USER]);
+    $currentUser = UserController::getUserByEmail($_SESSION[USER]);
     
-    User::deleteUser($currentUser->getIdUser());
+    UserController::deleteUser($currentUser->getIdUser());
     session_destroy();
     headerLocationView('register');
     exit;
@@ -126,9 +126,9 @@ function XdeleteUser()
     if (empty($_POST['name']))
         return 'Gibb mindestens einen Namen für die Galerie ein';
     
-    $currentUser = User::getUserByEmail($_SESSION[USER]);
+    $currentUser = UserController::getUserByEmail($_SESSION[USER]);
     
-    Gallery::addGallery($currentUser->getIdUser(), $_POST['name'], $_POST['description']);
+    GalleryController::addGallery($currentUser->getIdUser(), $_POST['name'], $_POST['description']);
     
     headerLocationView('galleries');
     exit;
@@ -144,8 +144,8 @@ function XchangeGallery()
     if (empty($_POST['name']))
         return 'Der Name darf nicht leer sein';
     
-    $gallery = Gallery::getGalleryById($_POST['id']);
-    $galleries = Gallery::getGalleriesByUserEmail($_SESSION[USER]);
+    $gallery = GalleryController::getGalleryById($_POST['id']);
+    $galleries = GalleryController::getGalleriesByUserEmail($_SESSION[USER]);
     
     if (!in_array($gallery, $galleries))
         return 'Ein Fehler ist aufgetreten';

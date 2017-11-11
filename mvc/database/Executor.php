@@ -14,7 +14,14 @@ class Executor
         $this->connection = $connection;
     }
 
-    protected function executeQuery($query, $params = []) {
+    /**
+     * @param $query a Statement which can be prepared
+     * @param $resultType the expected result Type (example: 'User')
+     * @param $isList if the result should be a list of objects or not (true||false)
+     * @param array $params the query parameter
+     * @return DataObject from Type $resultType
+     */
+    public function executeQuery($query, $resultType, $params = []) {
 
         $stmt = $this->prepareStatement($query);
         $stmt->execute($params);
@@ -23,7 +30,7 @@ class Executor
         while ($record = $stmt->fetch()) {
             $result[] = $record;
         }
-        return $result;
+        return DataObjectMapper::resultToDataObject($resultType,$result);
     }
 
     private function prepareStatement($query) {

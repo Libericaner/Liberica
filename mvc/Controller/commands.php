@@ -14,7 +14,7 @@ function Xlogin() {
     redirectUser();
     
     if (isset($_POST['username'], $_POST['password']) && !empty($_POST['username']) && !empty($_POST['password'])) {
-        if (User::verifyUser($_POST['username'], $_POST['password'])) {
+        if (UserController::verifyUser($_POST['username'], $_POST['password'])) {
             $_SESSION[USER] = $_POST['username'];
             $_SESSION[TOKEN] = bin2hex(random_bytes(TOKEN_LEN));
             headerLocationView('home');
@@ -32,8 +32,8 @@ function Xregister2() {
     {
         if(filter_var($_POST['user'], FILTER_VALIDATE_EMAIL)) {
             if(preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}/', $_POST['password'])) {
-                if (User::addUser($_POST['user'], $_POST['password'])) {
-                    if (User::verifyUser($_POST['user'], $_POST['password'])) {
+                if (UserController::addUser($_POST['user'], $_POST['password'])) {
+                    if (UserController::verifyUser($_POST['user'], $_POST['password'])) {
                         $_SESSION[USER] = $_POST['user'];
                         $_SESSION[TOKEN] = bin2hex(random_bytes(32));
                         header("Location: ./?view=hidden");
@@ -58,9 +58,9 @@ function XcreateGallery()
             return 'Gib einen Namen ein';
         }
         
-        $u = User::getUserByEmail($_SESSION[USER]);
+        $u = UserController::getUserByEmail($_SESSION[USER]);
           
-        $g = new Gallery();
+        $g = new GalleryController();
         $g->addGallery(intval($u->getIdUser()), $_POST['name'], $_POST['description']);
         header("Location: ");
       }
@@ -72,7 +72,7 @@ function XuploadImage(){
     
     if (isset($_POST['title'], $_POST['tags'], $_POST['galleryid']) && !empty($_POST['title']) && $_FILES['picture']['name'] != "") {
         
-        if (!in_array(Gallery::getGalleryById($_POST['galleryid']), Gallery::getGalleriesByUserEmail($_SESSION[USER])))
+        if (!in_array(GalleryController::getGalleryById($_POST['galleryid']), GalleryController::getGalleriesByUserEmail($_SESSION[USER])))
             return 'Diese Galerie gehört nicht dir';
         
         $file_size = $_FILES['picture']['size'];
@@ -81,7 +81,7 @@ function XuploadImage(){
     
         if ($isImage !== FALSE) {
             if ($file_size < 4000000) {
-                Picture::addPicture($_POST['galleryid'], $_POST['tags'], $_POST['title']);
+                PictureController::addPicture($_POST['galleryid'], $_POST['tags'], $_POST['title']);
                 //header("Location: ./?view=overview");
                 headerLocationView('gallery&id='. htmlentities($_POST['galleryid']));
             }
@@ -102,18 +102,18 @@ function XdeleteGallery()
     if (!isset($_POST['pw'], $_POST['gid']))
         return "Bitte gib dein Passwort ein";
     
-    if (!User::verifyUser($_SESSION[USER], $_POST['pw']))
+    if (!UserController::verifyUser($_SESSION[USER], $_POST['pw']))
         return "Passwort ungültig";
     
-    if (!in_array(Gallery::getGalleryById($_POST['gid']), Gallery::getGalleriesByUserEmail($_SESSION[USER])))
+    if (!in_array(GalleryController::getGalleryById($_POST['gid']), GalleryController::getGalleriesByUserEmail($_SESSION[USER])))
         return 'Diese Galerie gehört nicht dir';
     
-    $gallery = Gallery::getGalleryById($_POST['gid']);
+    $gallery = GalleryController::getGalleryById($_POST['gid']);
     
     if (is_null($gallery))
         return "Ein Fehler ist aufgetreten";
     
-    Gallery::deleteGalleryById($gallery->getId());
+    GalleryController::deleteGalleryById($gallery->getId());
     
     header("Location: ");
 }
@@ -127,19 +127,19 @@ function XremoveTagFromPic() {
     
     $userIsOwner = FALSE;
     
-    foreach (Gallery::getGalleriesByUserEmail($_SESSION[USER]) as $gallery)
+    foreach (GalleryController::getGalleriesByUserEmail($_SESSION[USER]) as $gallery)
     {
-        if (in_array(Picture::getPictureById($_POST['pid']), Picture::getPicturesFromGallery($gallery->getId())))
+        if (in_array(PictureController::getPictureById($_POST['pid']), PictureController::getPicturesFromGallery($gallery->getId())))
             $userIsOwner = TRUE;
     }
     
     if (!$userIsOwner)
         return 'Das Bild gehört nicht dir';
     
-    $picture = Picture::getPictureById($_POST['pid']);
-    $tag = Tag::getTagByName($_POST['tagName']);
+    $picture = PictureController::getPictureById($_POST['pid']);
+    $tag = TagController::getTagByName($_POST['tagName']);
     
-    Tag::removePictureTagConstraint($tag->getId(), $picture->getId());
+    TagController::removePictureTagConstraint($tag->getId(), $picture->getId());
     header("Location: ");
 }
 
@@ -151,9 +151,9 @@ function XaddTagToPic() {
     
     $userIsOwner = FALSE;
     
-    foreach (Gallery::getGalleriesByUserEmail($_SESSION[USER]) as $gallery)
+    foreach (GalleryController::getGalleriesByUserEmail($_SESSION[USER]) as $gallery)
     {
-        if (in_array(Picture::getPictureById($_POST['pid']), Picture::getPicturesFromGallery($gallery->getId())))
+        if (in_array(PictureController::getPictureById($_POST['pid']), PictureController::getPicturesFromGallery($gallery->getId())))
             $userIsOwner = TRUE;
     }
     
@@ -161,7 +161,7 @@ function XaddTagToPic() {
         return 'Das Bild gehört nicht dir';
     
     
-    $picture = Picture::getPictureById($_POST['pid']);
+    $picture = PictureController::getPictureById($_POST['pid']);
     $picture->addTag($_POST['tagName']);
     header("Location: ");
 }
@@ -172,7 +172,7 @@ function Xsearch() {
     if (!isset($_REQUEST['search']))
         return "Bitte gebe einen Suchbegriff ein";
     
-    return Tag::searchPicturesByUser($_REQUEST['search'], $_SESSION[USER]) ?: 'Es wurden keine Bilder mit diesem Tag gefunden';
+    return TagController::searchPicturesByUser($_REQUEST['search'], $_SESSION[USER]) ?: 'Es wurden keine Bilder mit diesem Tag gefunden';
 }
 
 function XdeletePicture()
@@ -188,9 +188,9 @@ function XdeletePicture()
     
     $userIsOwner = FALSE;
     
-    foreach (Gallery::getGalleriesByUserEmail($_SESSION[USER]) as $gallery)
+    foreach (GalleryController::getGalleriesByUserEmail($_SESSION[USER]) as $gallery)
     {
-        if (in_array(Picture::getPictureById($_POST['pictureId']), Picture::getPicturesFromGallery($gallery->getId())))
+        if (in_array(PictureController::getPictureById($_POST['pictureId']), PictureController::getPicturesFromGallery($gallery->getId())))
             $userIsOwner = TRUE;
     }
     
@@ -198,7 +198,7 @@ function XdeletePicture()
         return 'Das Bild gehört nicht dir';
     
     
-    Picture::deletePictureById($_POST['pictureId']);
+    PictureController::deletePictureById($_POST['pictureId']);
     
     $_GET['picture'] = '';
     return 'Bild erfolgreich gelöscht';

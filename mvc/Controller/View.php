@@ -1,6 +1,6 @@
 <?php
 
-// TODO: consider moveing session_start() to a better place (first: find a better place)
+// TODO: consider to move session_start() to a better place (first: find a better place)
 session_start();
 
 /**

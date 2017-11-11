@@ -7,25 +7,9 @@
 
 abstract class Controller
 {
-    private $executor;
+    protected $executor;
 
     public function __construct($executor) {
         $this->executor = $executor;
-    }
-
-    protected function executeQuery($query, $params = []) {
-
-        $stmt = $this->prepareStatement($query);
-        $stmt->execute($params);
-
-        $result = array();
-        while ($record = $stmt->fetch()) {
-            $result[] = $record;
-        }
-        return $result;
-    }
-
-    private function prepareStatement($query) {
-        return $this->connection->prepare($query);
     }
 }
