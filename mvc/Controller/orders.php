@@ -119,7 +119,7 @@ function XdeleteUser()
 
 // GALLERY
 
-function XcreateGallery()
+/*function XcreateGallery()
 {
     redirectGuest();
     
@@ -132,7 +132,7 @@ function XcreateGallery()
     
     headerLocationView('galleries');
     exit;
-}
+}*/
 
 function XchangeGallery()
 {

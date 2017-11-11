@@ -6,7 +6,7 @@
  * Time: 08:43
  */
 
-require_once "mvc/Model/Model.php";
+require_once "mvc/model/Model.php";
 
 class User extends Model {
     
