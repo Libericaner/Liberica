@@ -15,7 +15,7 @@ require_once MVC . 'settings.php';
 
 // IMPORTANT: APPLICATION SPECIFIC
 
-const MODEL = MVC . 'Model/';
+const MODEL = MVC . 'model/';
 
 require_once MODEL . 'Model.php';
 require_once MODEL . 'Gallery.php';
@@ -36,10 +36,11 @@ require_once CONTROLLER . 'library.php';
 require_once CONTROLLER . 'printLib.php';
 
 
-const DATABASE = MVC . 'Database/';
+const DATABASE = MVC . 'database/';
 
 require_once DATABASE . 'Database.php';
 require_once DATABASE . 'DBConnection.php';
+require_once DATABASE . 'Executor.php';
 
 
 new Controller();

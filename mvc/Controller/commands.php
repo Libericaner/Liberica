@@ -50,7 +50,7 @@ function Xregister2() {
     return 'Fülle alle Felder aus';
 }
 
-function XcreateGallery2()
+function XcreateGallery()
 {
     if (isset($_POST['name'], $_POST['description']))
     {
